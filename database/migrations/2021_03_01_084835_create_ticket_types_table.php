@@ -41,10 +41,8 @@ class CreateTicketTypesTable extends Migration
     public function seed()
     {
         TicketType::create([
-            [
-                'name' => 'Ticket',
-                'description' => 'A regular support ticket.',
-            ],
+            'name' => 'Ticket',
+            'description' => 'A regular support ticket.',
         ]);
     }
 }

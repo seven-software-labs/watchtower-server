@@ -40,9 +40,7 @@ class CreateDepartmentsTable extends Migration
     public function seed()
     {
         Department::create([
-            [
-                'name' => 'Client Success',
-            ],
+            'name' => 'Client Success',
         ]);
     }
 }

@@ -1,6 +1,6 @@
 <?php
 
-use App\Models\Department;
+use App\Models\Status;
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
@@ -40,7 +40,7 @@ class CreateStatusesTable extends Migration
      */
     public function seed()
     {
-        Department::create([
+        $statuses = collect([
             [
                 'name' => 'Open',
                 'color' => 'green',
@@ -54,5 +54,9 @@ class CreateStatusesTable extends Migration
                 'color' => 'black',
             ],
         ]);
+
+        $statuses->each(function($status) {
+            Status::create($status);
+        });
     }
 }

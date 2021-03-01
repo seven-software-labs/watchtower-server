@@ -46,6 +46,7 @@ class CreateOrganizationUserTable extends Migration
         $user = User::firstOrFail();
 
         $user->organizations()->create([
+            'name' => 'Watchtower',
             'organization_id' => User::firstOrFail()->getKey(),
         ], [
             'is_primary' => true,
