@@ -1,7 +1,9 @@
 <?php
 
+use App\Models\User;
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
+use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Schema;
 
 class CreateUsersTable extends Migration
@@ -22,8 +24,11 @@ class CreateUsersTable extends Migration
             $table->rememberToken();
             $table->foreignId('current_team_id')->nullable();
             $table->text('profile_photo_path')->nullable();
+            $table->softDeletes();
             $table->timestamps();
         });
+
+        $this->seed();
     }
 
     /**
@@ -34,5 +39,18 @@ class CreateUsersTable extends Migration
     public function down()
     {
         Schema::dropIfExists('users');
+    }
+
+    /**
+     * Seed initial data.
+     */
+    public function seed()
+    {
+        User::create([
+            'name' => 'Jonathan Tordesillas',
+            'email' => 'yamato.takato@gmail.com',
+            'password' => Hash::make('password'),
+            'email_verified_at' => now(),
+        ]);
     }
 }

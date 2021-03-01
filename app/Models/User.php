@@ -9,6 +9,7 @@ use Illuminate\Notifications\Notifiable;
 use Laravel\Fortify\TwoFactorAuthenticatable;
 use Laravel\Jetstream\HasProfilePhoto;
 use Laravel\Sanctum\HasApiTokens;
+use Illuminate\Database\Eloquent\SoftDeletes;
 
 class User extends Authenticatable
 {
@@ -17,6 +18,14 @@ class User extends Authenticatable
     use HasProfilePhoto;
     use Notifiable;
     use TwoFactorAuthenticatable;
+    use SoftDeletes;
+
+    /**
+     * The table associated with the model.
+     *
+     * @var string
+     */
+    protected $table = 'users';
 
     /**
      * The attributes that are mass assignable.
@@ -58,4 +67,21 @@ class User extends Authenticatable
     protected $appends = [
         'profile_photo_url',
     ];
+
+    /**
+     * Get the organizations that belong to the user.
+     */
+    public function organizations()
+    {
+        return $this->belongsToMany(Organization::class)
+            ->using(Pivot\OrganizationUser::class);
+    }
+
+    /**
+     * Get the tickets that belong to the user.
+     */
+    public function tickets()
+    {
+        return $this->belongsToMany(Ticket::class);
+    }
 }
