@@ -82,6 +82,6 @@ class User extends Authenticatable
      */
     public function tickets()
     {
-        return $this->belongsToMany(Ticket::class);
+        return $this->hasMany(Ticket::class);
     }
 }
