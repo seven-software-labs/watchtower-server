@@ -16,6 +16,15 @@ class Channel extends Model
      * @var string
      */
     protected $table = 'channels';
+
+    /**
+     * The attributes that are mass assignable.
+     *
+     * @var array
+     */
+    protected $fillable = [
+        'name',
+    ];
     
     /**
      * Get the tickets that belong to this status.

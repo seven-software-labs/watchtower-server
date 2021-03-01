@@ -40,7 +40,7 @@ class CreateMessageTypesTable extends Migration
      */
     public function seed()
     {
-        MessageType::create([
+        $messageTypes = collect([
             [
                 'name' => 'Reply',
                 'description' => 'A reply sent to the other person.',
@@ -50,5 +50,9 @@ class CreateMessageTypesTable extends Migration
                 'description' => 'A message for internal purposes only.',
             ],
         ]);
+
+        $messageTypes->each(function($messageType) {
+            MessageType::create($messageType);
+        });
     }
 }

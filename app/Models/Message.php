@@ -18,6 +18,17 @@ class Message extends Model
     protected $table = 'messages';
 
     /**
+     * The attributes that are mass assignable.
+     *
+     * @var array
+     */
+    protected $fillable = [
+        'content',
+        'ticket_id',
+        'user_id',
+    ];
+
+    /**
      * Get the ticket that this message belongs to.
      */
     public function ticket()

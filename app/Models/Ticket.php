@@ -16,6 +16,20 @@ class Ticket extends Model
      * @var string
      */
     protected $table = 'tickets';
+
+    /**
+     * The attributes that are mass assignable.
+     *
+     * @var array
+     */
+    protected $fillable = [
+        'subject',
+        'user_id',
+        'channel_id',
+        'ticket_type_id',
+        'department_id',
+        'status_id',
+    ];
     
     /**
      * Get the user that this ticket belongs to.

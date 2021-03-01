@@ -16,6 +16,15 @@ class Department extends Model
      * @var string
      */
     protected $table = 'departments';
+
+    /**
+     * The attributes that are mass assignable.
+     *
+     * @var array
+     */
+    protected $fillable = [
+        'name',
+    ];
     
     /**
      * Get the tickets that belong to this status.

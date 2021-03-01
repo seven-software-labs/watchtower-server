@@ -18,6 +18,16 @@ class MessageType extends Model
     protected $table = 'message_types';
 
     /**
+     * The attributes that are mass assignable.
+     *
+     * @var array
+     */
+    protected $fillable = [
+        'name',
+        'description',
+    ];
+
+    /**
      * Get the messages that belong to this message type.
      */
     public function messageType()

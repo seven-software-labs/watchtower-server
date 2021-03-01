@@ -18,6 +18,15 @@ class Status extends Model
     protected $table = 'statuses';
 
     /**
+     * The attributes that are mass assignable.
+     *
+     * @var array
+     */
+    protected $fillable = [
+        'name',
+    ];
+
+    /**
      * Get the tickets that belong to this status.
      */
     public function tickets()
