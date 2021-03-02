@@ -49,5 +49,12 @@ class CreateOrganizationUserTable extends Migration
         $user->organizations()->attach($organization->getKey(), [
             'is_primary' => true,
         ]);
+
+        $secondUser = User::find(2);
+        $secondOrganization = Organization::find(2);
+
+        $secondUser->organizations()->attach($secondOrganization->getKey(), [
+            'is_primary' => true,
+        ]);
     }
 }

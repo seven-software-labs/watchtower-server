@@ -39,8 +39,17 @@ class CreateOrganizationsTable extends Migration
      */
     public function seed()
     {
-        Organization::create([
-            'name' => 'Watchtower',
+        $organizations = collect([
+            [
+                'name' => 'Watchtower',
+            ],
+            [
+                'name' => 'Dallas Mavericks, Inc.'
+            ],
         ]);
+
+        $organizations->each(function($organization) {
+            Organization::create($organization);
+        });
     }
 }

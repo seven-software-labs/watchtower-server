@@ -41,7 +41,7 @@ class TicketController extends Controller
      */
     public function show(Ticket $ticket)
     {
-        return new TicketResource($ticket->load('messages'));
+        return new TicketResource($ticket->load('messages.user'));
     }
 
     /**

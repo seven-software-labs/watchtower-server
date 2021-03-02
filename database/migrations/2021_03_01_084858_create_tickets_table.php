@@ -47,7 +47,7 @@ class CreateTicketsTable extends Migration
     {
         Ticket::create([
             'subject' => 'This is an example ticket',
-            'user_id' => 1,
+            'user_id' => 2,
             'ticket_type_id' => 1,
             'department_id' => 1,
             'status_id' => 1,

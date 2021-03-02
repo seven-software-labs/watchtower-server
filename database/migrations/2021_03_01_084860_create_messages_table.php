@@ -17,6 +17,7 @@ class CreateMessagesTable extends Migration
         Schema::create('messages', function (Blueprint $table) {
             $table->id();
             $table->longtext('content');
+            $table->foreignId('message_type_id')->constrained('message_types');
             $table->foreignId('ticket_id')->constrained('tickets');
             $table->foreignId('user_id')->constrained('users');
             $table->softDeletes();
@@ -41,8 +42,11 @@ class CreateMessagesTable extends Migration
      */
     public function seed()
     {
-        // Message::create([
-        //     // ...
-        // ]);
+        Message::create([
+            'content' => "Sweat equity is the most valuable equity there is. Know your business and industry better than anyone else in the world. Love what you do or don't do it.",
+            'message_type_id' => 1,
+            'ticket_id' => 1,
+            'user_id' => 2,
+        ]);
     }
 }

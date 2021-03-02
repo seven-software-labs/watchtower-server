@@ -82,4 +82,12 @@ class Ticket extends Model
     {
         return $this->belongsTo(Status::class);
     }
+
+    /**
+     * Get the messages that belongs to this ticket.
+     */
+    public function messages()
+    {
+        return $this->hasMany(Message::class);
+    }
 }

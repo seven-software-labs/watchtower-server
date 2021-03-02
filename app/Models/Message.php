@@ -24,6 +24,7 @@ class Message extends Model
      */
     protected $fillable = [
         'content',
+        'message_type_id',
         'ticket_id',
         'user_id',
     ];
@@ -42,5 +43,13 @@ class Message extends Model
     public function messageType()
     {
         return $this->belongsTo(MessageType::class);
+    }
+    
+    /**
+     * Get the user that this ticket belongs to.
+     */
+    public function user()
+    {
+        return $this->belongsTo(User::class);
     }
 }

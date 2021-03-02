@@ -46,11 +46,23 @@ class CreateUsersTable extends Migration
      */
     public function seed()
     {
-        User::create([
-            'name' => 'Jonathan Tordesillas',
-            'email' => 'yamato.takato@gmail.com',
-            'password' => Hash::make('password'),
-            'email_verified_at' => now(),
+        $users = collect([
+            [
+                'name' => 'Jonathan Tordesillas',
+                'email' => 'yamato.takato@gmail.com',
+                'password' => Hash::make('password'),
+                'email_verified_at' => now(),
+            ],
+            [
+                'name' => 'Mark Cuban',
+                'email' => 'mark.cuban@dallasmavs.com',
+                'password' => Hash::make('password'),
+                'email_verified_at' => now(),
+            ],
         ]);
+
+        $users->each(function($user) {
+            User::create($user);
+        });
     }
 }
