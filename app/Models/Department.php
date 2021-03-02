@@ -26,6 +26,11 @@ class Department extends Model
         'name',
         'color',
     ];
+
+    /**
+     * The relationship counts that are automatically appended.
+     */
+    protected $withCount = ['tickets'];
     
     /**
      * Get the tickets that belong to this status.
