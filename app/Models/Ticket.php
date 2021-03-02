@@ -29,6 +29,7 @@ class Ticket extends Model
         'ticket_type_id',
         'department_id',
         'status_id',
+        'priority_id',
     ];
     
     /**

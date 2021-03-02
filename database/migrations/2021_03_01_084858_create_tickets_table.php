@@ -21,6 +21,7 @@ class CreateTicketsTable extends Migration
             $table->foreignId('ticket_type_id')->constrained('ticket_types');
             $table->foreignId('department_id')->constrained('departments');
             $table->foreignId('status_id')->constrained('statuses');
+            $table->foreignId('priority_id')->constrained('priorities');
             $table->softDeletes();
             $table->timestamps();
         });
