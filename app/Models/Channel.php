@@ -24,6 +24,7 @@ class Channel extends Model
      */
     protected $fillable = [
         'name',
+        'class',
         'slug',
         'is_active',
     ];

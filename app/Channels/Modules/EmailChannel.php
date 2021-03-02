@@ -48,6 +48,7 @@ class EmailChannel implements ChannelInterface {
             'slug' => $this->getChannelSlug(),
         ],[
             'is_active' => true,
+            'class' => get_class($this),
         ]);
 
         return;
@@ -66,23 +67,37 @@ class EmailChannel implements ChannelInterface {
      * Activate the channel.
      */
     public function activate() {
+        Channel::updateOrCreate([
+            'name' => $this->getChannelName(),
+            'slug' => $this->getChannelSlug(),
+        ],[
+            'is_active' => true,
+        ]);
 
+        return;
     }
 
     /**
      * Deactivate the channel.
      */
     public function deactivate() {
+        Channel::updateOrCreate([
+            'name' => $this->getChannelName(),
+            'slug' => $this->getChannelSlug(),
+        ],[
+            'is_active' => false,
+        ]);
 
+        return;
     }
 
     /**
-     * Sync Tickets
+     * Sync Channel
      * 
      * This function should be for syncing tickets between
      * the channel and Watchtower.
      */
-    public function syncTickets() {
+    public function syncChannel() {
         // Get new emails from the SMTP server.
         // updateOrCreate the tickets found within Watchtower.
     }

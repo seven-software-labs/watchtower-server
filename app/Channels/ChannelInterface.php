@@ -34,12 +34,12 @@ interface ChannelInterface {
     public function deactivate();
 
     /**
-     * Sync Tickets
+     * Sync Channel
      * 
      * This function should be for syncing tickets between
      * the channel and Watchtower.
      */
-    public function syncTickets();
+    public function syncChannel();
 
     /**
      * Creates a new ticket.

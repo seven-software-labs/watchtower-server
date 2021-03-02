@@ -11,7 +11,7 @@ class InstallChannel extends Command
      *
      * @var string
      */
-    protected $signature = 'channel:install';
+    protected $signature = 'channels:install';
 
     /**
      * The console command description.
