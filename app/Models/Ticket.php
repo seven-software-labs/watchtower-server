@@ -31,14 +31,17 @@ class Ticket extends Model
         'status_id',
         'priority_id',
     ];
-    
+
     /**
-     * Get the user that this ticket belongs to.
+     * The relationships that are automatically loaded.
      */
-    public function user()
-    {
-        return $this->belongsTo(User::class);
-    }
+    protected $with = [
+        'ticketType',
+        'department',
+        'priority',
+        'user.organizations',
+        'status',
+    ];
     
     /**
      * Get the user that this ticket belongs to.
@@ -57,18 +60,26 @@ class Ticket extends Model
     }
     
     /**
-     * Get the status that this ticket belongs to.
-     */
-    public function status()
-    {
-        return $this->belongsTo(Status::class);
-    }
-    
-    /**
      * Get the priority that this ticket belongs to.
      */
     public function priority()
     {
         return $this->belongsTo(Priority::class);
+    }
+    
+    /**
+     * Get the user that this ticket belongs to.
+     */
+    public function user()
+    {
+        return $this->belongsTo(User::class);
+    }
+    
+    /**
+     * Get the status that this ticket belongs to.
+     */
+    public function status()
+    {
+        return $this->belongsTo(Status::class);
     }
 }

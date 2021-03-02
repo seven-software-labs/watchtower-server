@@ -66,6 +66,7 @@ class User extends Authenticatable
      */
     protected $appends = [
         'profile_photo_url',
+        'primary_organization',
     ];
 
     /**
@@ -74,7 +75,18 @@ class User extends Authenticatable
     public function organizations()
     {
         return $this->belongsToMany(Organization::class)
-            ->using(Pivot\OrganizationUser::class);
+            ->using(Pivot\OrganizationUser::class)
+            ->withPivot('is_primary');
+    }
+
+    /**
+     * Get the primary organization of the user.
+     */
+    public function getPrimaryOrganizationAttribute()
+    {
+        return $this->organizations()
+            ->where('is_primary', true)
+            ->first();
     }
 
     /**

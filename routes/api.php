@@ -23,5 +23,6 @@ Route::group(['middleware' => []], function() {
         'departments' => \App\Http\Controllers\DepartmentController::class,
         'statuses' => \App\Http\Controllers\StatusController::class,
         'priorities' => \App\Http\Controllers\PriorityController::class,
+        'tickets' => \App\Http\Controllers\TicketController::class,
     ]);
 });
