@@ -62,4 +62,12 @@ class Ticket extends Model
     {
         return $this->belongsTo(Status::class);
     }
+    
+    /**
+     * Get the priority that this ticket belongs to.
+     */
+    public function priority()
+    {
+        return $this->belongsTo(Priority::class);
+    }
 }

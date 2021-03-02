@@ -20,6 +20,8 @@ Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
 
 Route::group(['middleware' => []], function() {
     Route::apiResources([
+        'departments' => \App\Http\Controllers\DepartmentController::class,
         'statuses' => \App\Http\Controllers\StatusController::class,
+        'priorities' => \App\Http\Controllers\PriorityController::class,
     ]);
 });

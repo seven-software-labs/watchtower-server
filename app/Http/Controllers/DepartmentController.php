@@ -2,11 +2,11 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Status;
-use App\Http\Resources\StatusResource;
+use App\Models\Department;
+use App\Http\Resources\DepartmentResource;
 use Illuminate\Http\Request;
 
-class StatusController extends Controller
+class DepartmentController extends Controller
 {
     /**
      * Display a listing of the resource.
@@ -16,10 +16,10 @@ class StatusController extends Controller
     public function index(Request $request)
     {
         if($request->get('paginated', false)) {
-            return StatusResource::collection(Status::paginate(15));
+            return DepartmentResource::collection(Department::paginate(15));
         }
         
-        return StatusResource::collection(Status::all());
+        return DepartmentResource::collection(Department::all());
     }
 
     /**
@@ -36,10 +36,10 @@ class StatusController extends Controller
     /**
      * Display the specified resource.
      *
-     * @param  \App\Models\Status  $status
+     * @param  \App\Models\Department  $department
      * @return \Illuminate\Http\Response
      */
-    public function show(Status $status)
+    public function show(Department $department)
     {
         //
     }
@@ -48,10 +48,10 @@ class StatusController extends Controller
      * Update the specified resource in storage.
      *
      * @param  \Illuminate\Http\Request  $request
-     * @param  \App\Models\Status  $status
+     * @param  \App\Models\Department  $department
      * @return \Illuminate\Http\Response
      */
-    public function update(Request $request, Status $status)
+    public function update(Request $request, Department $department)
     {
         //
     }
@@ -59,10 +59,10 @@ class StatusController extends Controller
     /**
      * Remove the specified resource from storage.
      *
-     * @param  \App\Models\Status  $status
+     * @param  \App\Models\Department  $department
      * @return \Illuminate\Http\Response
      */
-    public function destroy(Status $status)
+    public function destroy(Department $department)
     {
         //
     }

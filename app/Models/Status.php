@@ -24,7 +24,13 @@ class Status extends Model
      */
     protected $fillable = [
         'name',
+        'color',
     ];
+
+    /**
+     * The relationship counts that are automatically appended.
+     */
+    protected $withCount = ['tickets'];
 
     /**
      * Get the tickets that belong to this status.

@@ -6,7 +6,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
-class Department extends Model
+class Priority extends Model
 {
     use HasFactory, SoftDeletes;
 
@@ -15,7 +15,7 @@ class Department extends Model
      *
      * @var string
      */
-    protected $table = 'departments';
+    protected $table = 'priorities';
 
     /**
      * The attributes that are mass assignable.
@@ -26,7 +26,12 @@ class Department extends Model
         'name',
         'color',
     ];
-    
+
+    /**
+     * The relationship counts that are automatically appended.
+     */
+    protected $withCount = ['tickets'];
+
     /**
      * Get the tickets that belong to this status.
      */

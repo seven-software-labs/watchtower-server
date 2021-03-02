@@ -17,6 +17,7 @@ class CreateDepartmentsTable extends Migration
         Schema::create('departments', function (Blueprint $table) {
             $table->id();
             $table->string('name');
+            $table->string('color')->default('gray');
             $table->softDeletes();
             $table->timestamps();
         });
@@ -41,6 +42,7 @@ class CreateDepartmentsTable extends Migration
     {
         Department::create([
             'name' => 'Client Success',
+            'color' => 'gray',
         ]);
     }
 }
