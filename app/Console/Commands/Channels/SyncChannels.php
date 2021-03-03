@@ -41,8 +41,7 @@ class SyncChannels extends Command
         $activeChannels = Channel::where('is_active', true)->get();
 
         $this->withProgressBar($activeChannels, function ($activeChannel) {
-            $class = new $activeChannel->class;
-            $class->syncChannel();
+            $activeChannel->syncChannel();
         });
 
         echo "\n";

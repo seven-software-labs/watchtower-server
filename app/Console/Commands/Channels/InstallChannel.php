@@ -2,6 +2,7 @@
 
 namespace App\Console\Commands\Channels;
 
+use App\Channels\Kernel as ChannelKernel;
 use Illuminate\Console\Command;
 
 class InstallChannel extends Command
@@ -38,18 +39,18 @@ class InstallChannel extends Command
     public function handle()
     {
         // Lets get all the available channel classes in app/Channels/Modules.
-        $availableChannelClasses = collect(array_values(array_diff(scandir(base_path("app/Channels/Modules")), ['.', '..'])));
+        $availableChannelClasses = collect(ChannelKernel::getModules());
+
         $channels = $availableChannelClasses->map(function($availableChannelClass) {
-            $className = "App\\Channels\\Modules\\" . explode(".", $availableChannelClass)[0];
-            return new $className;
+            return new $availableChannelClass;
         });
 
         // Lets prompt the user for input on which class to install.
         $selectedChannel = $this->choice(
             'Which channel do you want to install?',
-            $channels->map(function($channel) {
+            array_values($channels->map(function($channel) {
                 return get_class($channel);
-            })->toArray(),
+            })->toArray()),
         );
 
         // Lets instantiate the channel class for the selected channel.

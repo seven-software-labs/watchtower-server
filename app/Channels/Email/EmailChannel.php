@@ -1,8 +1,9 @@
 <?php
 
-namespace App\Channels\Modules;
+namespace App\Channels\Email;
 
 use App\Channels\ChannelInterface;
+use App\Channels\Email\SyncEmailChannelJob;
 use App\Models\Channel;
 use App\Models\User;
 use App\Models\TicketType;
@@ -11,6 +12,7 @@ use App\Http\Requests\Channel\CreateChannelRequest;
 use App\Http\Requests\Message\CreateMessageRequest;
 use App\Http\Requests\Ticket\CreateTicketRequest;
 use App\Models\Ticket;
+use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Str;
 use Illuminate\Support\Facades\Hash;
@@ -104,11 +106,11 @@ class EmailChannel implements ChannelInterface {
      */
     public function syncChannel() {
         $mailbox = new \PhpImap\Mailbox(
-            '{pop.gmail.com:995/pop3/ssl}INBOX', // IMAP server and mailbox folder
+            '{pop.gmail.com:993/imap/ssl}', // IMAP server and mailbox folder
             'yamato.takato@gmail.com', // Username for the before configured mailbox
-            '', // Password for the before configured username
+            'ULN922mx105', // Password for the before configured username
             __DIR__, // Directory, where attachments will be saved (optional)
-            'UTF-8' // Server encoding (optional)
+            'US-ASCII' // Server encoding (optional)
         );
 
         // set some connection arguments (if appropriate)
@@ -117,7 +119,8 @@ class EmailChannel implements ChannelInterface {
         try {
             // Get all emails (messages)
             // PHP.net imap_search criteria: http://php.net/manual/en/function.imap-search.php
-            $mailIds = $mailbox->searchMailbox('ALL');
+            $since = Carbon::now()->subWeek()->format('d F Y');
+            $mailIds = $mailbox->searchMailbox('SINCE "'.$since.'"');
         } catch(\PhpImap\Exceptions\ConnectionException $ex) {
             echo "IMAP connection failed: " . $ex;
             die();
@@ -132,13 +135,15 @@ class EmailChannel implements ChannelInterface {
         rsort($mailIds);
 
         // Get the last 15 emails only
-        array_splice($mailIds, 15);
+        // array_splice($mailIds, 15);
 
         // Loop through the emails.
         foreach($mailIds as $mailId)
         {
             // Check if there's a message with the mail id.
             $hasMessage = Message::where('source_id', $mailId)->exists();
+
+            echo "$mailId \n";
 
             // If the ticket exists, we can ignore this mail.
             if ($hasMessage) {
@@ -173,8 +178,12 @@ class EmailChannel implements ChannelInterface {
                 'message_type_id' => 1,
                 'user_id' => $user->getKey(),
                 'source_id' => $mailId,
+                'source_created_at' => Carbon::parse($mail->headers->date)->format('Y-m-d H:i:s'),
             ]);
         }
+
+        // Disconnect from mailbox
+        $mailbox->disconnect();
     }
 
     /**

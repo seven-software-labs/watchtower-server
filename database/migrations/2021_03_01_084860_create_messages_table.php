@@ -21,6 +21,7 @@ class CreateMessagesTable extends Migration
             $table->foreignId('ticket_id')->constrained('tickets');
             $table->foreignId('user_id')->constrained('users');
             $table->string('source_id')->nullable();
+            $table->dateTime('source_created_at')->nullable();
             $table->softDeletes();
             $table->timestamps();
         });

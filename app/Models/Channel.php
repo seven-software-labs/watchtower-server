@@ -2,13 +2,14 @@
 
 namespace App\Models;
 
+use App\Channels\ChannelTrait;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
 class Channel extends Model
 {
-    use HasFactory, SoftDeletes;
+    use ChannelTrait, HasFactory, SoftDeletes;
 
     /**
      * The table associated with the model.
