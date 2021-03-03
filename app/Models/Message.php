@@ -29,6 +29,8 @@ class Message extends Model
         'user_id',
         'source_id',
         'source_created_at',
+        'is_sent',
+        'is_delivered',
     ];
 
     /**

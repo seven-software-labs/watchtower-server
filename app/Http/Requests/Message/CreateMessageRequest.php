@@ -13,7 +13,7 @@ class CreateMessageRequest extends FormRequest
      */
     public function authorize()
     {
-        return false;
+        return true;
     }
 
     /**
@@ -24,7 +24,11 @@ class CreateMessageRequest extends FormRequest
     public function rules()
     {
         return [
-            //
+            'content' => ['required', 'string'],
+            'message_type_id' => ['required', 'exists:message_types,id'],
+            'ticket_id' => ['required', 'exists:tickets,id'],
+            'user_id' => ['required', 'exists:users,id'],
+            'channel_id' => ['nullable', 'exists:channels,id'],
         ];
     }
 }

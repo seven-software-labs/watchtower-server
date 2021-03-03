@@ -37,6 +37,7 @@ class Ticket extends Model
      */
     protected $with = [
         'ticketType',
+        'channel',
         'department',
         'priority',
         'user.organizations',
@@ -57,6 +58,14 @@ class Ticket extends Model
     public function department()
     {
         return $this->belongsTo(Department::class);
+    }
+    
+    /**
+     * Get the channel that this ticket belongs to.
+     */
+    public function channel()
+    {
+        return $this->belongsTo(Channel::class);
     }
     
     /**

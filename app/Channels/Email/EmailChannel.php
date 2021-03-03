@@ -17,6 +17,12 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Str;
 use Illuminate\Support\Facades\Hash;
 
+//Import PHPMailer classes into the global namespace
+//These must be at the top of your script, not inside a function
+use PHPMailer\PHPMailer\PHPMailer;
+use PHPMailer\PHPMailer\SMTP;
+use PHPMailer\PHPMailer\Exception;
+
 class EmailChannel implements ChannelInterface {
     /**
      * The channel name.
@@ -108,7 +114,7 @@ class EmailChannel implements ChannelInterface {
         $mailbox = new \PhpImap\Mailbox(
             '{pop.gmail.com:993/imap/ssl}', // IMAP server and mailbox folder
             'yamato.takato@gmail.com', // Username for the before configured mailbox
-            'ULN922mx105', // Password for the before configured username
+            '', // Password for the before configured username
             __DIR__, // Directory, where attachments will be saved (optional)
             'US-ASCII' // Server encoding (optional)
         );
@@ -119,7 +125,7 @@ class EmailChannel implements ChannelInterface {
         try {
             // Get all emails (messages)
             // PHP.net imap_search criteria: http://php.net/manual/en/function.imap-search.php
-            $since = Carbon::now()->subWeek()->format('d F Y');
+            $since = Carbon::now()->subDay()->format('d F Y');
             $mailIds = $mailbox->searchMailbox('SINCE "'.$since.'"');
         } catch(\PhpImap\Exceptions\ConnectionException $ex) {
             echo "IMAP connection failed: " . $ex;
@@ -171,6 +177,7 @@ class EmailChannel implements ChannelInterface {
                 'department_id' => 1, // Customer Success
                 'status_id' => 1, // Open
                 'priority_id' => 2, // Medium
+                'channel_id' => Channel::where('slug', $this->getChannelSlug())->firstOrFail()->getKey(),
             ]);
 
             $ticket->messages()->create([
@@ -184,6 +191,43 @@ class EmailChannel implements ChannelInterface {
 
         // Disconnect from mailbox
         $mailbox->disconnect();
+    }
+
+    /**
+     * Send a message through the channel.
+     */
+    public function sendMessage(Message $message) {
+        //Instantiation and passing `true` enables exceptions
+        $mail = new PHPMailer(true);
+
+        try {
+            //Server settings
+            $mail->SMTPDebug = SMTP::DEBUG_SERVER;                      //Enable verbose debug output
+            $mail->isSMTP();                                            //Send using SMTP
+            $mail->Host       = 'smtp.gmail.com';                     //Set the SMTP server to send through
+            $mail->SMTPAuth   = true;                                   //Enable SMTP authentication
+            $mail->Username   = 'yamato.takato@gmail.com';                     //SMTP username
+            $mail->Password   = '';                               //SMTP password
+            $mail->SMTPSecure = PHPMailer::ENCRYPTION_STARTTLS;         //Enable TLS encryption; `PHPMailer::ENCRYPTION_SMTPS` encouraged
+            $mail->Port       = 587;                                    //TCP port to connect to, use 465 for `PHPMailer::ENCRYPTION_SMTPS` above
+        
+            //Recipients
+            $mail->setFrom($message->user->email, $message->user->name);
+            $mail->addAddress($message->ticket->user->email, $message->ticket->user->name);
+        
+            //Content
+            $mail->isHTML(true);                                  //Set email format to HTML
+            $mail->Subject = $message->subject ?? "Re: ".$message->ticket->subject;
+            $mail->Body    = $message->content;
+            $mail->AltBody = $message->content;
+        
+            $mail->send();
+            echo 'Message has been sent';
+            return 'Message has been sent';
+        } catch (Exception $e) {
+            return $mail->ErrorInfo;
+            echo "Message could not be sent. Mailer Error: {$mail->ErrorInfo}";
+        }
     }
 
     /**
