@@ -20,6 +20,7 @@ class CreateMessagesTable extends Migration
             $table->foreignId('message_type_id')->constrained('message_types');
             $table->foreignId('ticket_id')->constrained('tickets');
             $table->foreignId('user_id')->constrained('users');
+            $table->string('source_id')->nullable();
             $table->softDeletes();
             $table->timestamps();
         });

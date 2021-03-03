@@ -77,7 +77,7 @@ class User extends Authenticatable
      */
     public function getIsCustomerAttribute()
     {
-        return $this->hasRole('customer');
+        return $this->hasRole('customer') || (!$this->hasRole(['administrator', 'operator']));
     }
 
     /**

@@ -27,6 +27,7 @@ class Message extends Model
         'message_type_id',
         'ticket_id',
         'user_id',
+        'source_id',
     ];
 
     /**

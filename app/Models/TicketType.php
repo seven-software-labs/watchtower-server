@@ -11,6 +11,11 @@ class TicketType extends Model
     use HasFactory, SoftDeletes;
 
     /**
+     * Ticket Types
+     */
+    const TICKET = 1;
+
+    /**
      * The table associated with the model.
      *
      * @var string
