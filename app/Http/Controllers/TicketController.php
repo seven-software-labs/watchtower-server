@@ -16,10 +16,10 @@ class TicketController extends Controller
     public function index(Request $request)
     {
         if($request->get('paginated', false)) {
-            return TicketResource::collection(Ticket::orderBy('id', 'desc')->paginate(15));
+            return TicketResource::collection(Ticket::orderBy('id', 'asc')->paginate(15));
         }
         
-        return TicketResource::collection(Ticket::orderBy('id', 'desc')->get());
+        return TicketResource::collection(Ticket::orderBy('id', 'asc')->get());
     }
 
     /**

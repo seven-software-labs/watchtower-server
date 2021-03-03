@@ -115,7 +115,7 @@ class EmailChannel implements ChannelInterface {
             '{pop.gmail.com:993/imap/ssl}', // IMAP server and mailbox folder
             'yamato.takato@gmail.com', // Username for the before configured mailbox
             '', // Password for the before configured username
-            __DIR__, // Directory, where attachments will be saved (optional)
+            false, // Directory, where attachments will be saved (optional)
             'US-ASCII' // Server encoding (optional)
         );
 
@@ -125,7 +125,7 @@ class EmailChannel implements ChannelInterface {
         try {
             // Get all emails (messages)
             // PHP.net imap_search criteria: http://php.net/manual/en/function.imap-search.php
-            $since = Carbon::now()->subDay()->format('d F Y');
+            $since = Carbon::now()->subHour()->format('d F Y H:i:s');
             $mailIds = $mailbox->searchMailbox('SINCE "'.$since.'"');
         } catch(\PhpImap\Exceptions\ConnectionException $ex) {
             echo "IMAP connection failed: " . $ex;
@@ -141,24 +141,32 @@ class EmailChannel implements ChannelInterface {
         rsort($mailIds);
 
         // Get the last 15 emails only
-        // array_splice($mailIds, 15);
+        array_splice($mailIds, 5);
 
         // Loop through the emails.
         foreach($mailIds as $mailId)
         {
-            // Check if there's a message with the mail id.
-            $hasMessage = Message::where('source_id', $mailId)->exists();
+            // Lets pull the mail from the mailbox.
+            $mail = $mailbox->getMail($mailId, false);
 
-            echo "$mailId \n";
+            $message_id = $mail->headers->message_id;
+            $in_reply_to = $mail->headers->in_reply_to ?? null;
+            $references = $mail->headers->references ?? null;
+
+            // Check if there's a message with the mail id.
+            $hasMessage = Message::where('source_id', $message_id)->exists();
+            $parentMessage = Message::select('ticket_id', 'source_id')
+                ->where('source_id', $in_reply_to)
+                ->orWhere('source_id', $references)
+                ->first();
 
             // If the ticket exists, we can ignore this mail.
             if ($hasMessage) {
                 echo "Mail ID $mailId already has a message. \n";
                 continue;
+            } else {
+                echo "Creating message for Mail ID $mailId";
             }
-
-            // Lets pull the mail from the mailbox.
-            $mail = $mailbox->getMail($mailId, false);
 
             // Lets find or create the user that this ticket is going to belong to.
             $user = User::firstOrCreate([
@@ -169,22 +177,26 @@ class EmailChannel implements ChannelInterface {
             ]);
 
             // Lets create the ticket and the message.
-            $ticket = Ticket::updateOrCreate([
-                'subject' => $mail->subject,
-                'user_id' => $user->getKey(),
-            ], [
-                'ticket_type_id' => TicketType::TICKET,
-                'department_id' => 1, // Customer Success
-                'status_id' => 1, // Open
-                'priority_id' => 2, // Medium
-                'channel_id' => Channel::where('slug', $this->getChannelSlug())->firstOrFail()->getKey(),
-            ]);
+            if($parentMessage) {
+                $ticket = $parentMessage->ticket;
+            } else {
+                $ticket = Ticket::updateOrCreate([
+                    'subject' => $mail->subject,
+                    'user_id' => $user->getKey(),
+                ], [
+                    'ticket_type_id' => TicketType::TICKET,
+                    'department_id' => 1, // Customer Success
+                    'status_id' => 1, // Open
+                    'priority_id' => 2, // Medium
+                    'channel_id' => Channel::where('slug', $this->getChannelSlug())->firstOrFail()->getKey(),
+                ]);
+            }
 
             $ticket->messages()->create([
                 'content' => $mail->textHtml,
                 'message_type_id' => 1,
                 'user_id' => $user->getKey(),
-                'source_id' => $mailId,
+                'source_id' => $message_id,
                 'source_created_at' => Carbon::parse($mail->headers->date)->format('Y-m-d H:i:s'),
             ]);
         }
@@ -220,13 +232,17 @@ class EmailChannel implements ChannelInterface {
             $mail->Subject = $message->subject ?? "Re: ".$message->ticket->subject;
             $mail->Body    = $message->content;
             $mail->AltBody = $message->content;
-        
-            $mail->send();
-            echo 'Message has been sent';
-            return 'Message has been sent';
+
+            if($mail->send()) {
+                $message->update([
+                    'source_id' => $mail->getLastMessageID(),
+                    'is_sent' => true,
+                ]);
+            }
+            
+            return $message;
         } catch (Exception $e) {
             return $mail->ErrorInfo;
-            echo "Message could not be sent. Mailer Error: {$mail->ErrorInfo}";
         }
     }
 

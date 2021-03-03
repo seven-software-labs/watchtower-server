@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
@@ -43,6 +44,23 @@ class Ticket extends Model
         'user.organizations',
         'status',
     ];
+
+    /**
+     * The accessors to append to the model's array form.
+     *
+     * @var array
+     */
+    protected $appends = [
+        'last_reply',
+    ];
+
+    /**
+     * Get the last reply attribute for the ticket.
+     */
+    public function getLastReplyAttribute()
+    {
+        return Carbon::parse($this->messages->max('source_created_at'))->diffForHumans();
+    }
     
     /**
      * Get the user that this ticket belongs to.
