@@ -18,7 +18,7 @@ Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
     return $request->user();
 });
 
-Route::group(['middleware' => []], function() {
+Route::group(['middleware' => ['auth:sanctum']], function() {
     Route::apiResources([
         'departments' => \App\Http\Controllers\DepartmentController::class,
         'messages' => \App\Http\Controllers\MessageController::class,
