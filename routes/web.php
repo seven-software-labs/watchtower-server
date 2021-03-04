@@ -15,45 +15,6 @@ use Inertia\Inertia;
 |
 */
 
-Route::get('test', function() {
-    DB::table('channel_organization')
-        ->update([
-            'settings' => collect([
-                'server' => 'imap.gmail.com',
-                'port' => '993',
-                'mode' => 'imap',
-                'encryption' => 'ssl',
-                'email' => 'yamato.takato@gmail.com',
-                'password' => 'ULN922mx105',
-            ])->toJSON(),
-        ]);
-
-    die();
-    $channel = \App\Models\Channel::first();
-    $organization = \App\Models\Organization::first();
-
-    echo "Channel:";
-    dump($channel);
-
-    echo "Channel Settings:";
-    dump($channel->channelSettings);
-
-    echo "Organization:";
-    dump($organization);
-
-    echo "Organization Channels:";
-
-    foreach($organization->channels as $channel) {
-        echo "\n\n".$channel->name . ":";
-        dump($channel);
-
-        echo "Pivot: ";
-        dump($channel->pivot);
-    }
-
-    die();
-});
-
 Route::get('/', function () {
     return Inertia::render('Welcome', [
         'canLogin' => Route::has('login'),

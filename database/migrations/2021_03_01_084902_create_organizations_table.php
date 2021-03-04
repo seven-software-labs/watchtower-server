@@ -17,6 +17,7 @@ class CreateOrganizationsTable extends Migration
         Schema::create('organizations', function (Blueprint $table) {
             $table->id();
             $table->string('name');
+            $table->foreignId('parent_organization_id')->nullable()->constrained('organizations');
             $table->softDeletes();
             $table->timestamps();
         });

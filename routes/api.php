@@ -24,8 +24,10 @@ Route::group(['middleware' => ['auth:sanctum']], function() {
     Route::apiResources([
         'departments' => \App\Http\Controllers\DepartmentController::class,
         'messages' => \App\Http\Controllers\MessageController::class,
+        'organizations' => \App\Http\Controllers\OrganizationController::class,
         'priorities' => \App\Http\Controllers\PriorityController::class,
         'statuses' => \App\Http\Controllers\StatusController::class,
         'tickets' => \App\Http\Controllers\TicketController::class,
+        'users' => \App\Http\Controllers\UserController::class,
     ]);
 });

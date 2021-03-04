@@ -28,6 +28,11 @@ class Organization extends Model
     ];
 
     /**
+     * The relationship counts that are automatically appended.
+     */
+    protected $withCount = ['users'];
+
+    /**
      * Get the channels that belong to the organization.
      */
     public function channels()
@@ -38,12 +43,11 @@ class Organization extends Model
     }    
 
     /**
-     * Get the users that belong to the organization.
+     * Get the channels that belong to the organization.
      */
-    public function users()
+    public function organizations()
     {
-        return $this->belongsToMany(User::class)
-            ->using(Pivot\OrganizationUser::class);
+        return $this->hasMany(self::class, 'parent_organization_id');
     }    
 
     /**
@@ -83,4 +87,13 @@ class Organization extends Model
     {
         return $this->hasMany(Ticket::class);
     }
+
+    /**
+     * Get the users that belong to the organization.
+     */
+    public function users()
+    {
+        return $this->belongsToMany(User::class)
+            ->using(Pivot\OrganizationUser::class);
+    }    
 }
