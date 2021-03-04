@@ -39,4 +39,14 @@ class Department extends Model
     {
         return $this->hasMany(Ticket::class);
     }
+
+    /**
+     * Get the organizations that belong to the department.
+     */
+    public function organizations()
+    {
+        return $this->belongsToMany(Organization::class)
+            ->using(Pivot\OrganizationDepartment::class)
+            ->withPivot('is_default');
+    }
 }

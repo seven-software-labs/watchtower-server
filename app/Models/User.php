@@ -87,7 +87,7 @@ class User extends Authenticatable
     {
         return $this->belongsToMany(Organization::class)
             ->using(Pivot\OrganizationUser::class)
-            ->withPivot('is_primary');
+            ->withPivot('is_default');
     }
 
     /**
@@ -96,7 +96,7 @@ class User extends Authenticatable
     public function getPrimaryOrganizationAttribute()
     {
         return $this->organizations()
-            ->where('is_primary', true)
+            ->where('is_default', true)
             ->first();
     }
 

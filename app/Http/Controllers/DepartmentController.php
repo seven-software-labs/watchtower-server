@@ -15,11 +15,11 @@ class DepartmentController extends Controller
      */
     public function index(Request $request)
     {
-        if($request->get('paginated', false)) {
-            return DepartmentResource::collection(Department::paginate(15));
-        }
-        
-        return DepartmentResource::collection(Department::all());
+        $user = auth()->user();
+        $organization = $user->primaryOrganization;
+        $departments = $organization->departments()->paginate(15);
+
+        return DepartmentResource::collection($departments);
     }
 
     /**

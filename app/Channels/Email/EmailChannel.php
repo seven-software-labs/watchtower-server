@@ -105,28 +105,45 @@ class EmailChannel implements ChannelInterface {
     }
 
     /**
+     * Sync the inbox folder in the mailbox.
+     */
+    public function syncInbox()
+    {
+
+    }
+
+    /**
+     * Sync the sent items folder in the mailbox.
+     */
+    public function syncSentItems()
+    {
+
+    }
+
+    /**
      * Sync Channel
      * 
      * This function should be for syncing tickets between
      * the channel and Watchtower.
      */
-    public function syncChannel() {
+    public function syncChannel() 
+    {
         $mailbox = new \PhpImap\Mailbox(
-            '{pop.gmail.com:993/imap/ssl}', // IMAP server and mailbox folder
+            '{imap.gmail.com:993/imap/ssl}', // IMAP server and mailbox folder
             'yamato.takato@gmail.com', // Username for the before configured mailbox
-            '', // Password for the before configured username
+            'ULN922mx105', // Password for the before configured username
             false, // Directory, where attachments will be saved (optional)
             'US-ASCII' // Server encoding (optional)
         );
 
         // set some connection arguments (if appropriate)
-        // $mailbox->setConnectionArgs(OP_READONLY);
+        $mailbox->setConnectionArgs(OP_READONLY);
 
         try {
             // Get all emails (messages)
             // PHP.net imap_search criteria: http://php.net/manual/en/function.imap-search.php
-            $since = Carbon::now()->subHour()->format('d F Y H:i:s');
-            $mailIds = $mailbox->searchMailbox('SINCE "'.$since.'"');
+            $since = Carbon::now()->startOfDay()->format('d F Y H:i:s');
+            $mailIds = $mailbox->searchMailbox('SINCE "'.$since.'" UNDELETED');
         } catch(\PhpImap\Exceptions\ConnectionException $ex) {
             echo "IMAP connection failed: " . $ex;
             die();
@@ -151,14 +168,18 @@ class EmailChannel implements ChannelInterface {
 
             $message_id = $mail->headers->message_id;
             $in_reply_to = $mail->headers->in_reply_to ?? null;
-            $references = $mail->headers->references ?? null;
 
             // Check if there's a message with the mail id.
             $hasMessage = Message::where('source_id', $message_id)->exists();
-            $parentMessage = Message::select('ticket_id', 'source_id')
-                ->where('source_id', $in_reply_to)
-                ->orWhere('source_id', $references)
-                ->first();
+
+            // Lets check if there's an "in_reply_to" and find a message for it.
+            if(!blank($in_reply_to)) {
+                $parentMessage = Message::select('ticket_id', 'source_id')
+                    ->where('source_id', $in_reply_to)
+                    ->first();
+            } else {
+                $parentMessage = null;
+            }
 
             // If the ticket exists, we can ignore this mail.
             if ($hasMessage) {
@@ -219,7 +240,7 @@ class EmailChannel implements ChannelInterface {
             $mail->Host       = 'smtp.gmail.com';                     //Set the SMTP server to send through
             $mail->SMTPAuth   = true;                                   //Enable SMTP authentication
             $mail->Username   = 'yamato.takato@gmail.com';                     //SMTP username
-            $mail->Password   = '';                               //SMTP password
+            $mail->Password   = 'ULN922mx105';                               //SMTP password
             $mail->SMTPSecure = PHPMailer::ENCRYPTION_STARTTLS;         //Enable TLS encryption; `PHPMailer::ENCRYPTION_SMTPS` encouraged
             $mail->Port       = 587;                                    //TCP port to connect to, use 465 for `PHPMailer::ENCRYPTION_SMTPS` above
         

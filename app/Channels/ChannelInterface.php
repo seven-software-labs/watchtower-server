@@ -2,6 +2,7 @@
 
 namespace App\Channels;
 
+use App\Models\Message;
 use App\Http\Requests\CHannel\CreateChannelRequest;
 use App\Http\Requests\Message\CreateMessageRequest;
 use App\Http\Requests\Ticket\CreateTicketRequest;
@@ -53,5 +54,5 @@ interface ChannelInterface {
      * 
      * This should create a new message for a ticket.
      */
-    public function createMessage(Ticket $ticket, CreateMessageRequest $request);
+    public function sendMessage(Message $message);
 }

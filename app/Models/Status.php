@@ -39,4 +39,14 @@ class Status extends Model
     {
         return $this->hasMany(Ticket::class);
     }
+
+    /**
+     * Get the organizations that belong to the status.
+     */
+    public function organizations()
+    {
+        return $this->belongsToMany(Organization::class)
+            ->using(Pivot\OrganizationStatus::class)
+            ->withPivot('is_default');
+    }
 }

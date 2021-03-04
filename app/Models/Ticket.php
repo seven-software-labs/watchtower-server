@@ -24,13 +24,14 @@ class Ticket extends Model
      * @var array
      */
     protected $fillable = [
-        'subject',
-        'user_id',
         'channel_id',
-        'ticket_type_id',
         'department_id',
-        'status_id',
+        'organization_id',
         'priority_id',
+        'status_id',
+        'subject',
+        'ticket_type_id',
+        'user_id',
     ];
 
     /**

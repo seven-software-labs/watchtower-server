@@ -15,11 +15,11 @@ class PriorityController extends Controller
      */
     public function index(Request $request)
     {
-        if($request->get('paginated', false)) {
-            return PriorityResource::collection(Priority::paginate(15));
-        }
-        
-        return PriorityResource::collection(Priority::all());
+        $user = auth()->user();
+        $organization = $user->primaryOrganization;
+        $priorities = $organization->priorities()->paginate(15);
+
+        return PriorityResource::collection($priorities);
     }
 
     /**

@@ -1,13 +1,12 @@
 <?php
 
 use App\Models\Organization;
-use App\Models\User;
-use App\Models\Pivot\OrganizationUser;
+use App\Models\Status;
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-class CreateOrganizationUserTable extends Migration
+class CreateOrganizationStatusTable extends Migration
 {
     /**
      * Run the migrations.
@@ -16,12 +15,11 @@ class CreateOrganizationUserTable extends Migration
      */
     public function up()
     {
-        Schema::create('organization_user', function (Blueprint $table) {
+        Schema::create('organization_status', function (Blueprint $table) {
             $table->id();
             $table->foreignId('organization_id')->constrained('organizations');
-            $table->foreignId('user_id')->constrained('users');
+            $table->foreignId('status_id')->constrained('statuses');
             $table->boolean('is_default')->default(false);
-            $table->softDeletes();
             $table->timestamps();
         });
 
@@ -35,7 +33,7 @@ class CreateOrganizationUserTable extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('organization_users');
+        Schema::dropIfExists('organization_status');
     }
 
     /**
@@ -43,18 +41,8 @@ class CreateOrganizationUserTable extends Migration
      */
     public function seed()
     {
-        $user = User::firstOrFail();
         $organization = Organization::first();
-
-        $user->organizations()->attach($organization->getKey(), [
-            'is_default' => true,
-        ]);
-
-        $secondUser = User::find(2);
-        $secondOrganization = Organization::find(2);
-
-        $secondUser->organizations()->attach($secondOrganization->getKey(), [
-            'is_default' => true,
-        ]);
+        $statuses = Status::pluck('id')->toArray();
+        $organization->statuses()->sync($statuses);
     }
 }

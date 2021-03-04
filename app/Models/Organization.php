@@ -34,4 +34,42 @@ class Organization extends Model
         return $this->belongsToMany(User::class)
             ->using(Pivot\OrganizationUser::class);
     }    
+
+    /**
+     * Get the departments that belong to the organization.
+     */
+    public function departments()
+    {
+        return $this->belongsToMany(Department::class)
+            ->using(Pivot\OrganizationDepartment::class)
+            ->withPivot('is_default');
+    }
+
+    /**
+     * Get the priorities that belong to the organization.
+     */
+    public function priorities()
+    {
+        return $this->belongsToMany(Priority::class)
+            ->using(Pivot\OrganizationPriority::class)
+            ->withPivot('is_default');
+    }
+
+    /**
+     * Get the statuses that belong to the organization.
+     */
+    public function statuses()
+    {
+        return $this->belongsToMany(Status::class)
+            ->using(Pivot\OrganizationStatus::class)
+            ->withPivot('is_default');
+    }
+
+    /**
+     * Get the tickets that belong to the organization.
+     */
+    public function tickets()
+    {
+        return $this->hasMany(Ticket::class);
+    }
 }

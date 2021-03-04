@@ -13,13 +13,13 @@ class StatusController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    public function index(Request $request)
+    public function index()
     {
-        if($request->get('paginated', false)) {
-            return StatusResource::collection(Status::paginate(15));
-        }
-        
-        return StatusResource::collection(Status::all());
+        $user = auth()->user();
+        $organization = $user->primaryOrganization;
+        $statuses = $organization->statuses()->paginate(15);
+
+        return StatusResource::collection($statuses);
     }
 
     /**

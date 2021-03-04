@@ -39,4 +39,14 @@ class Priority extends Model
     {
         return $this->hasMany(Ticket::class);
     }
+
+    /**
+     * Get the organizations that belong to the priority.
+     */
+    public function organizations()
+    {
+        return $this->belongsToMany(Organization::class)
+            ->using(Pivot\OrganizationPriority::class)
+            ->withPivot('is_default');
+    }
 }
