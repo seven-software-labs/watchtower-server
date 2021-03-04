@@ -5,9 +5,11 @@ namespace App\Channels\Email;
 use App\Channels\ChannelInterface;
 use App\Channels\Email\SyncEmailChannelJob;
 use App\Models\Channel;
+use App\Models\ChannelSetting;
 use App\Models\User;
 use App\Models\TicketType;
 use App\Models\Message;
+use App\Models\Organization;
 use App\Http\Requests\Channel\CreateChannelRequest;
 use App\Http\Requests\Message\CreateMessageRequest;
 use App\Http\Requests\Ticket\CreateTicketRequest;
@@ -16,6 +18,7 @@ use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Str;
 use Illuminate\Support\Facades\Hash;
+use DB;
 
 //Import PHPMailer classes into the global namespace
 //These must be at the top of your script, not inside a function
@@ -56,12 +59,38 @@ class EmailChannel implements ChannelInterface {
      * Install the channel.
      */
     public function install() {
-        Channel::updateOrCreate([
+        $channel = Channel::updateOrCreate([
             'name' => $this->getChannelName(),
             'slug' => $this->getChannelSlug(),
         ],[
             'is_active' => true,
             'class' => get_class($this),
+        ]);
+
+        $channelSettings = collect([
+            'server',
+            'port',
+            'mode',
+            'encryption',
+            'email',
+            'password',
+        ])->each(function($channelSetting) use($channel) {
+            ChannelSetting::updateOrCreate([
+                'name' => $channelSetting,
+                'slug' => Str::slug($channelSetting),
+                'channel_id' => $channel->getKey(),
+            ]);
+        });
+
+        $user = User::first();
+        $organization = $user->primary_organization;
+
+        $organization->channels()->detach($channel->getKey());
+        $organization->channels()->attach($channel->getKey(), [
+            'is_active' => false,
+            'settings' => $channel->channelSettings->map(function($channelSetting) {
+                return [$channelSetting->slug => null];
+            })->toJSON(),
         ]);
 
         return;
@@ -71,9 +100,24 @@ class EmailChannel implements ChannelInterface {
      * Uninstall the channel.
      */
     public function uninstall() {
-        Channel::where('name', $this->getChannelName())
+        // Get channel.
+        $channel = Channel::where('name', $this->getChannelName())
             ->where('slug', $this->getChannelSlug())
+            ->first();
+
+        // Get channel settings.
+        $channelSettings = ChannelSetting::where('channel_id', $channel->getKey())
+            ->get();
+
+        // Remove pivot entries
+        DB::table('channel_organization_settings')
+            ->whereIn('channel_setting_id', $channelSettings->pluck('id'))
             ->delete();
+
+        // Remove channel settings.
+        $channelSettings->delete();
+        // Remove channel.
+        $channel->delete();
     }
 
     /**
@@ -107,33 +151,15 @@ class EmailChannel implements ChannelInterface {
     /**
      * Sync the inbox folder in the mailbox.
      */
-    public function syncInbox()
+    public function syncInbox(Organization $organization, Channel $channel, \Illuminate\Support\Collection $settings)
     {
-
-    }
-
-    /**
-     * Sync the sent items folder in the mailbox.
-     */
-    public function syncSentItems()
-    {
-
-    }
-
-    /**
-     * Sync Channel
-     * 
-     * This function should be for syncing tickets between
-     * the channel and Watchtower.
-     */
-    public function syncChannel() 
-    {
+        $server = "{{$settings->get('server')}:{$settings->get('port')}/{$settings->get('mode')}/{$settings->get('encryption')}}";
         $mailbox = new \PhpImap\Mailbox(
-            '{imap.gmail.com:993/imap/ssl}', // IMAP server and mailbox folder
-            'yamato.takato@gmail.com', // Username for the before configured mailbox
-            'ULN922mx105', // Password for the before configured username
-            false, // Directory, where attachments will be saved (optional)
-            'US-ASCII' // Server encoding (optional)
+            $server, 
+            $settings->get('email'), 
+            $settings->get('password'),
+            false,
+            'US-ASCII',
         );
 
         // set some connection arguments (if appropriate)
@@ -143,7 +169,7 @@ class EmailChannel implements ChannelInterface {
             // Get all emails (messages)
             // PHP.net imap_search criteria: http://php.net/manual/en/function.imap-search.php
             $since = Carbon::now()->startOfDay()->format('d F Y H:i:s');
-            $mailIds = $mailbox->searchMailbox('SINCE "'.$since.'" UNDELETED');
+            $mailIds = $mailbox->searchMailbox('TO "'.$settings->get('email').'" SINCE "'.$since.'" UNDELETED');
         } catch(\PhpImap\Exceptions\ConnectionException $ex) {
             echo "IMAP connection failed: " . $ex;
             die();
@@ -158,7 +184,7 @@ class EmailChannel implements ChannelInterface {
         rsort($mailIds);
 
         // Get the last 15 emails only
-        array_splice($mailIds, 5);
+        // array_splice($mailIds, 50);
 
         // Loop through the emails.
         foreach($mailIds as $mailId)
@@ -204,6 +230,7 @@ class EmailChannel implements ChannelInterface {
                 $ticket = Ticket::updateOrCreate([
                     'subject' => $mail->subject,
                     'user_id' => $user->getKey(),
+                    'organization_id' => $organization->getkey(),
                 ], [
                     'ticket_type_id' => TicketType::TICKET,
                     'department_id' => 1, // Customer Success
@@ -224,6 +251,37 @@ class EmailChannel implements ChannelInterface {
 
         // Disconnect from mailbox
         $mailbox->disconnect();
+    }
+
+    /**
+     * Sync the sent items folder in the mailbox.
+     */
+    public function syncSentItems()
+    {
+
+    }
+
+    /**
+     * Sync Channel
+     * 
+     * This function should be for syncing tickets between
+     * the channel and Watchtower.
+     */
+    public function syncChannel() 
+    {
+        $channel = Channel::where('slug', $this->getChannelSlug())->firstOrFail();
+
+        $organizations = Organization::whereHas('channels', function($query) use($channel) {
+            $query->where('channels.id', $channel->getKey());
+            $query->where('channel_organization.is_active', true);
+        })->get();
+
+        $organizations->each(function($organization) use($channel) {
+            $organizationChannel = $organization->channels()->find($channel->getKey());
+            $settings = $organizationChannel->pivot->settings;
+
+            $this->syncInbox($organization, $channel, $settings);
+        });
     }
 
     /**

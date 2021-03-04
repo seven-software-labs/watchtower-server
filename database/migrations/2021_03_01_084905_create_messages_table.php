@@ -53,6 +53,7 @@ class CreateMessagesTable extends Migration
                 'message_type_id' => 1,
                 'ticket_id' => 1,
                 'user_id' => 2,
+                'source_created_at' => now(),
             ],
             // Operator Reply
             [
@@ -60,6 +61,7 @@ class CreateMessagesTable extends Migration
                 'message_type_id' => 1,
                 'ticket_id' => 1,
                 'user_id' => 1,
+                'source_created_at' => now(),
             ],
         ]);
 

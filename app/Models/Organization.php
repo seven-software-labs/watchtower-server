@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Models\Pivot\ChannelOrganization;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
@@ -25,6 +26,16 @@ class Organization extends Model
     protected $fillable = [
         'name',
     ];
+
+    /**
+     * Get the channels that belong to the organization.
+     */
+    public function channels()
+    {
+        return $this->belongsToMany(Channel::class)
+            ->using(Pivot\ChannelOrganization::class)
+            ->withPivot('is_active', 'settings');
+    }    
 
     /**
      * Get the users that belong to the organization.

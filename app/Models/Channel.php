@@ -31,10 +31,27 @@ class Channel extends Model
     ];
     
     /**
-     * Get the tickets that belong to this status.
+     * Get the channel settings that belong to this channel.
+     */
+    public function channelSettings()
+    {
+        return $this->hasMany(ChannelSetting::class);
+    }
+    
+    /**
+     * Get the tickets that belong to this channel.
      */
     public function tickets()
     {
         return $this->hasMany(Ticket::class);
+    }
+
+    /**
+     * Get the organizations that belong to the channel.
+     */
+    public function organizations()
+    {
+        return $this->belongsToMany(Organization::class)
+            ->withPivot('is_active');
     }
 }
