@@ -39,7 +39,7 @@ class Organization extends Model
     {
         return $this->belongsToMany(Channel::class)
             ->using(Pivot\ChannelOrganization::class)
-            ->withPivot('id', 'is_active', 'settings');
+            ->withPivot('id', 'name', 'is_active', 'settings');
     }    
 
     /**

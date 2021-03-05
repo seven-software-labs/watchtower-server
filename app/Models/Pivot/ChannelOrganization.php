@@ -32,7 +32,6 @@ class ChannelOrganization extends Pivot
      * @var array
      */
     protected $appends = [
-        'name',
         'channel_organization_id',
     ];
 
@@ -66,18 +65,6 @@ class ChannelOrganization extends Pivot
     public function getChannelOrganizationIdAttribute()
     {
         return $this->id;
-    }
-
-    /**
-     * Get the name attribute with a default value.
-     */
-    public function getNameAttribute($value = null)
-    {
-        if(!$value) {
-            return 'Undefined Nickname';
-        }
-
-        return $value;
     }
 
     /**

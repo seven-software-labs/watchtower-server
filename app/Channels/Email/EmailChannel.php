@@ -70,46 +70,46 @@ class EmailChannel implements ChannelInterface {
         $channelSettings = collect([
             [
                 'name' => 'server',
+                'description' => '',
+                'placeholder' => 'imap.gmail.com',
                 'field_type' => 'text',
             ],
             [
                 'name' => 'port',
+                'description' => '',
+                'placeholder' => '993',
                 'field_type' => 'text',
             ],
             [
                 'name' => 'mode',
+                'description' => '',
+                'placeholder' => 'imap',
                 'field_type' => 'text',
             ],
             [
                 'name' => 'encryption',
+                'description' => '',
+                'placeholder' => 'ssl',
                 'field_type' => 'text',
             ],
             [
                 'name' => 'email',
-                'field_type' => 'email',
+                'description' => '',
+                'placeholder' => 'support@watchtowerapp.com',
+                'field_type' => 'email'
             ],
             [
                 'name' => 'password',
+                'description' => '',
+                'placeholder' => 'password',
                 'field_type' => 'password',
             ],
         ])->each(function($channelSetting) use($channel) {
-            ChannelSetting::updateOrCreate([
-                'name' => $channelSetting['name'],
-                'field_type' => $channelSetting['field_type'],
-                'slug' => Str::slug($channelSetting),
+            ChannelSetting::updateOrCreate(array_merge($channelSetting, [
+                'slug' => Str::slug($channelSetting['name']),
                 'channel_id' => $channel->getKey(),
-            ]);
+            ]));
         });
-
-        $user = User::first();
-        $organization = $user->primary_organization;
-
-        $organization->channels()->attach($channel->getKey(), [
-            'is_active' => false,
-            'settings' => $channel->channelSettings->map(function($channelSetting) {
-                return [$channelSetting->slug => null];
-            })->toJSON(),
-        ]);
 
         return;
     }

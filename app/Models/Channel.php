@@ -64,6 +64,6 @@ class Channel extends Model
     public function organizations()
     {
         return $this->belongsToMany(Organization::class)
-            ->withPivot('id', 'is_active');
+            ->withPivot('id', 'name', 'is_active');
     }
 }

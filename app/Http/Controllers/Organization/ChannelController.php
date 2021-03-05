@@ -68,9 +68,9 @@ class ChannelController extends Controller
     public function attach(Request $request, Organization $organization)
     {
         $organization->channels()->attach($request->get('channel_id'), [
-            'name' => $request->get('name', 'Undefined Nickname'),
+            'name' => $request->get('name'),
             'settings' => collect($request->get('settings', []))->toJSON(),
-            'is_active' => false,
+            'is_active' => $request->get('is_active'),
         ]);
 
         return $organization->channels;

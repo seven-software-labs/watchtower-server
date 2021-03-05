@@ -20,6 +20,7 @@ class CreateChannelSettingsTable extends Migration
             $table->string('placeholder')->nullable();
             $table->string('description')->nullable();
             $table->string('channel_type')->nullable();
+            $table->string('field_type')->nullable()->default('text');
             $table->string('slug')->unique();
             $table->boolean('is_required')->default(true);
             $table->softDeletes();
