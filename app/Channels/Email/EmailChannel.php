@@ -167,42 +167,46 @@ class EmailChannel implements ChannelInterface {
     }
 
     /**
+     * Sync Channel.
+     * 
+     * This function is for syncing tickets between
+     * the channel and the application.
+     */
+    public function syncChannel(): void
+    {
+        $channel = Channel::where('slug', $this->getChannelSlug())
+            ->firstOrFail();
+
+        $channelOrganizations = \App\Models\ChannelOrganization::query()
+            ->where('channel_id', $channel->getKey())
+            ->where('is_active', true)
+            ->get();
+
+        $channelOrganizations->each(function($channelOrganization) {
+            $this->syncInbox($channelOrganization);
+        });
+    }
+
+    /**
      * Sync the inbox folder in the mailbox.
      */
-    public function syncInbox(Organization $organization, Channel $channel, \Illuminate\Support\Collection $settings)
+    public function syncInbox(\App\Models\ChannelOrganization $channelOrganization): void
     {
-        $server = "{{$settings->get('server')}:{$settings->get('port')}/{$settings->get('mode')}/{$settings->get('encryption')}}";
-        $mailbox = new \PhpImap\Mailbox(
-            $server, 
-            $settings->get('email'), 
-            $settings->get('password'),
-            false,
-            'US-ASCII',
-        );
-
-        // set some connection arguments (if appropriate)
-        $mailbox->setConnectionArgs(OP_READONLY);
+        $mailbox = $this->getMailbox($channelOrganization);
+        $settings = $channelOrganization->settings;
 
         try {
-            // Get all emails (messages)
-            // PHP.net imap_search criteria: http://php.net/manual/en/function.imap-search.php
             $since = Carbon::now()->startOfDay()->format('d F Y H:i:s');
             $mailIds = $mailbox->searchMailbox('TO "'.$settings->get('email').'" SINCE "'.$since.'" UNDELETED');
+            if(!$mailIds) return;
+            rsort($mailIds);
         } catch(\PhpImap\Exceptions\ConnectionException $ex) {
-            echo "IMAP connection failed: " . $ex;
-            die();
-        }
-
-        // If $mailsIds is empty, no emails could be found
-        if(!$mailIds) {
+            logger()->error("IMAP connection failed: " . $ex);
             return;
         }
 
-        // Put the latest email on top of listing
-        rsort($mailIds);
-
         // Get the last 15 emails only
-        // array_splice($mailIds, 50);
+        // array_splice($mailIds, 1);
 
         // Loop through the emails.
         foreach($mailIds as $mailId)
@@ -248,13 +252,13 @@ class EmailChannel implements ChannelInterface {
                 $ticket = Ticket::updateOrCreate([
                     'subject' => $mail->subject,
                     'user_id' => $user->getKey(),
-                    'organization_id' => $organization->getkey(),
+                    'organization_id' => $channelOrganization->organization_id,
                 ], [
                     'ticket_type_id' => TicketType::TICKET,
-                    'department_id' => 1, // Customer Success
+                    'department_id' => $channelOrganization->department_id,
                     'status_id' => 1, // Open
                     'priority_id' => 2, // Medium
-                    'channel_id' => Channel::where('slug', $this->getChannelSlug())->firstOrFail()->getKey(),
+                    'channel_id' => $channelOrganization->channel_id,
                 ]);
             }
 
@@ -272,41 +276,32 @@ class EmailChannel implements ChannelInterface {
     }
 
     /**
-     * Sync the sent items folder in the mailbox.
+     * Create the mailbox.
      */
-    public function syncSentItems()
+    public function getMailbox(\App\Models\ChannelOrganization $channelOrganization, $folder = 'INBOX'): \PhpImap\Mailbox
     {
+        // Get the settings collection.
+        $settings = $channelOrganization->settings;
 
-    }
+        // Build the server string.
+        $server = $settings->get('server');
+        $port = $settings->get('port');
+        $mode = $settings->get('mode');
+        $encryption = $settings->get('encryption');
 
-    /**
-     * Sync Channel
-     * 
-     * This function should be for syncing tickets between
-     * the channel and Watchtower.
-     */
-    public function syncChannel() 
-    {
-        // First, we identify the channel.
-        $channel = Channel::where('slug', $this->getChannelSlug())->firstOrFail();
+        // Build the mailbox.
+        $mailbox = new \PhpImap\Mailbox(
+            "{{$server}:{$port}/{$mode}/{$encryption}}$folder", 
+            $settings->get('email'), 
+            $settings->get('password'),
+            false,
+            'US-ASCII',
+        );
 
-        // Lets get all the organizations who have assigned this channel.
-        // Additionally, lets only get those with active channels.
-        // Afterwards, we're going to loop through each of the organizations
-        // channels and sync their inboxes.
-        Organization::whereHas('channels', function($query) use($channel) {
-            $query->where('channels.id', $channel->getKey());
-            $query->where('channel_organization.is_active', true);
-        })->each(function($organization) use($channel) {
-            $channels = $organization->channels()
-                ->where('id', $channel->getKey())
-                ->get();
+        // Configure connection arguments.
+        $mailbox->setConnectionArgs(OP_READONLY);
 
-            // dd($channels);
-            // $settings = $organizationChannel->pivot->settings;
-
-            // $this->syncInbox($organization, $channel, $settings);
-        });
+        return $mailbox;
     }
 
     /**

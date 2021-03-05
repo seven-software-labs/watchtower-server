@@ -17,7 +17,7 @@ class ChannelOrganizationController extends Controller
      */
     public function index(Organization $organization)
     {
-        $channelOrganizations = ChannelOrganization::where('master_organization_id', $organization->getKey())
+        $channelOrganizations = ChannelOrganization::where('organization_id', $organization->getKey())
             ->with('department', 'channel', 'organization')
             ->paginate(15);
         
@@ -36,8 +36,7 @@ class ChannelOrganizationController extends Controller
             'name' => $request->get('name'),
             'channel_id' => $request->get('channel_id'),
             'department_id' => $request->get('department_id'),
-            'organization_id' => $request->get('organization_id'),
-            'master_organization_id' => $organization->getKey(),
+            'organization_id' => $organization->getKey(),
             'settings' => collect($request->get('settings', []))->toJSON(),
             'is_active' => $request->get('is_active'),
         ]);
@@ -69,7 +68,6 @@ class ChannelOrganizationController extends Controller
             'name' => $request->get('name'),
             'channel_id' => $request->get('channel_id'),
             'department_id' => $request->get('department_id'),
-            'organization_id' => $request->get('organization_id'),
             'settings' => collect($request->get('settings', []))->toJSON(),
             'is_active' => $request->get('is_active'),
         ]);

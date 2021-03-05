@@ -17,7 +17,7 @@ class TicketController extends Controller
      */
     public function index(Organization $organization)
     {
-        $tickets = Ticket::where('master_organization_id', $organization->getKey())
+        $tickets = $organization->tickets()
             ->paginate(15);
 
         return TicketResource::collection($tickets);

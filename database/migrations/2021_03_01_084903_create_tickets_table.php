@@ -20,7 +20,6 @@ class CreateTicketsTable extends Migration
             $table->foreignId('user_id')->constrained('users');
             $table->foreignId('channel_id')->nullable()->constrained('channels');
             $table->foreignId('department_id')->constrained('departments');
-            $table->foreignId('master_organization_id')->constrained('organizations');
             $table->foreignId('organization_id')->constrained('organizations');
             $table->foreignId('priority_id')->constrained('priorities');
             $table->foreignId('status_id')->constrained('statuses');
@@ -50,7 +49,6 @@ class CreateTicketsTable extends Migration
         Ticket::create([
             'department_id' => 1,
             'organization_id' => 1,
-            'master_organization_id' => 1,
             'priority_id' => 1,
             'status_id' => 1,
             'subject' => 'This is an example ticket',

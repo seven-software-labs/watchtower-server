@@ -24,7 +24,6 @@ class ChannelOrganization extends Model
         'department_id',
         'is_active',
         'organization_id',
-        'master_organization_id',
         'settings',
     ];
 

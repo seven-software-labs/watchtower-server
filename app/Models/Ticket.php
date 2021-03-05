@@ -27,7 +27,6 @@ class Ticket extends Model
         'channel_id',
         'department_id',
         'organization_id',
-        'master_organization_id',
         'priority_id',
         'status_id',
         'subject',
@@ -94,14 +93,6 @@ class Ticket extends Model
     public function organization()
     {
         return $this->belongsTo(Organization::class);
-    }
-    
-    /**
-     * Get the master organization that this ticket belongs to.
-     */
-    public function masterOrganization()
-    {
-        return $this->belongsTo(Organization::class, 'master_organization_id');
     }
     
     /**
