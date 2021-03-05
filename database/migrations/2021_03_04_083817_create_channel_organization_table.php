@@ -17,7 +17,9 @@ class CreateChannelOrganizationTable extends Migration
     {
         Schema::create('channel_organization', function (Blueprint $table) {
             $table->id();
+            $table->string('name');
             $table->foreignId('channel_id')->constrained('channels');
+            $table->foreignId('department_id')->constrained('departments');
             $table->foreignId('organization_id')->constrained('organizations');
             $table->boolean('is_active')->default(false);
             $table->json('settings');

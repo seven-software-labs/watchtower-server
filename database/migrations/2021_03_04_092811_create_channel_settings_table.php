@@ -17,6 +17,9 @@ class CreateChannelSettingsTable extends Migration
             $table->id();
             $table->foreignId('channel_id')->constrained('channels');
             $table->string('name');
+            $table->string('placeholder')->nullable();
+            $table->string('description')->nullable();
+            $table->string('channel_type')->nullable();
             $table->string('slug')->unique();
             $table->boolean('is_required')->default(true);
             $table->softDeletes();

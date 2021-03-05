@@ -19,10 +19,21 @@ class ChannelOrganization extends Pivot
      * @var array
      */
     protected $fillable = [
+        'name',
         'channel_id',
         'is_active',
         'organization_id',
         'settings',
+    ];
+
+    /**
+     * The accessors to append to the model's array form.
+     *
+     * @var array
+     */
+    protected $appends = [
+        'name',
+        'channel_organization_id',
     ];
 
     /**
@@ -34,11 +45,39 @@ class ChannelOrganization extends Pivot
     }
 
     /**
+     * Get the department that belongs to the pivot row.
+     */
+    public function department()
+    {
+        return $this->belongsTo(\App\Models\Department::class);
+    }
+
+    /**
      * Get the organization that belongs to the pivot row.
      */
     public function organization()
     {
         return $this->belongsTo(\App\Models\Organization::class);
+    }
+
+    /**
+     * Get the row id in a readable format.
+     */
+    public function getChannelOrganizationIdAttribute()
+    {
+        return $this->id;
+    }
+
+    /**
+     * Get the name attribute with a default value.
+     */
+    public function getNameAttribute($value = null)
+    {
+        if(!$value) {
+            return 'Undefined Nickname';
+        }
+
+        return $value;
     }
 
     /**

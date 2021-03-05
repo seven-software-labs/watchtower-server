@@ -68,15 +68,34 @@ class EmailChannel implements ChannelInterface {
         ]);
 
         $channelSettings = collect([
-            'server',
-            'port',
-            'mode',
-            'encryption',
-            'email',
-            'password',
+            [
+                'name' => 'server',
+                'field_type' => 'text',
+            ],
+            [
+                'name' => 'port',
+                'field_type' => 'text',
+            ],
+            [
+                'name' => 'mode',
+                'field_type' => 'text',
+            ],
+            [
+                'name' => 'encryption',
+                'field_type' => 'text',
+            ],
+            [
+                'name' => 'email',
+                'field_type' => 'email',
+            ],
+            [
+                'name' => 'password',
+                'field_type' => 'password',
+            ],
         ])->each(function($channelSetting) use($channel) {
             ChannelSetting::updateOrCreate([
-                'name' => $channelSetting,
+                'name' => $channelSetting['name'],
+                'field_type' => $channelSetting['field_type'],
                 'slug' => Str::slug($channelSetting),
                 'channel_id' => $channel->getKey(),
             ]);
@@ -85,7 +104,6 @@ class EmailChannel implements ChannelInterface {
         $user = User::first();
         $organization = $user->primary_organization;
 
-        $organization->channels()->detach($channel->getKey());
         $organization->channels()->attach($channel->getKey(), [
             'is_active' => false,
             'settings' => $channel->channelSettings->map(function($channelSetting) {

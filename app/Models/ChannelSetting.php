@@ -24,6 +24,9 @@ class ChannelSetting extends Model
     protected $fillable = [
         'channel_id',
         'name',
+        'placeholder',
+        'description',
+        'field_type',
         'slug',
     ];
     

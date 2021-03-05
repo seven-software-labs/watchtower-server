@@ -29,6 +29,18 @@ class Channel extends Model
         'slug',
         'is_active',
     ];
+
+    /**
+     * The relationships that are automatically loaded.
+     */
+    protected $with = [
+        'channelSettings',
+    ];
+
+    /**
+     * The relationship counts that are automatically appended.
+     */
+    protected $withCount = ['tickets'];
     
     /**
      * Get the channel settings that belong to this channel.
@@ -52,6 +64,6 @@ class Channel extends Model
     public function organizations()
     {
         return $this->belongsToMany(Organization::class)
-            ->withPivot('is_active');
+            ->withPivot('id', 'is_active');
     }
 }
