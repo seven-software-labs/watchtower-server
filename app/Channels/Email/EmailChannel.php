@@ -128,9 +128,9 @@ class EmailChannel implements ChannelInterface {
             ->get();
 
         // Remove pivot entries
-        DB::table('channel_organization_settings')
-            ->whereIn('channel_setting_id', $channelSettings->pluck('id'))
-            ->delete();
+        // DB::table('channel_organization_settings')
+        //     ->whereIn('channel_setting_id', $channelSettings->pluck('id'))
+        //     ->delete();
 
         // Remove channel settings.
         $channelSettings->delete();
@@ -287,18 +287,25 @@ class EmailChannel implements ChannelInterface {
      */
     public function syncChannel() 
     {
+        // First, we identify the channel.
         $channel = Channel::where('slug', $this->getChannelSlug())->firstOrFail();
 
-        $organizations = Organization::whereHas('channels', function($query) use($channel) {
+        // Lets get all the organizations who have assigned this channel.
+        // Additionally, lets only get those with active channels.
+        // Afterwards, we're going to loop through each of the organizations
+        // channels and sync their inboxes.
+        Organization::whereHas('channels', function($query) use($channel) {
             $query->where('channels.id', $channel->getKey());
             $query->where('channel_organization.is_active', true);
-        })->get();
+        })->each(function($organization) use($channel) {
+            $channels = $organization->channels()
+                ->where('id', $channel->getKey())
+                ->get();
 
-        $organizations->each(function($organization) use($channel) {
-            $organizationChannel = $organization->channels()->find($channel->getKey());
-            $settings = $organizationChannel->pivot->settings;
+            // dd($channels);
+            // $settings = $organizationChannel->pivot->settings;
 
-            $this->syncInbox($organization, $channel, $settings);
+            // $this->syncInbox($organization, $channel, $settings);
         });
     }
 

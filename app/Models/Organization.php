@@ -2,7 +2,6 @@
 
 namespace App\Models;
 
-use App\Models\Pivot\ChannelOrganization;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
@@ -37,9 +36,10 @@ class Organization extends Model
      */
     public function channels()
     {
-        return $this->belongsToMany(Channel::class)
-            ->using(Pivot\ChannelOrganization::class)
-            ->withPivot('id', 'name', 'is_active', 'settings');
+        return $this->hasManyThrough(Channel::class, ChannelOrganization::class, 'channel_id', 'id')
+            ->with('channel_organization');
+            // ->using(Pivot\ChannelOrganization::class)
+            // ->withPivot('id', 'name', 'is_active', 'settings', 'department_id');
     }    
 
     /**

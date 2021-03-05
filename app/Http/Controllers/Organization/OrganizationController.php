@@ -16,7 +16,13 @@ class OrganizationController extends Controller
      */
     public function index(Organization $organization)
     {
-        return OrganizationResource::collection($organization->organizations()->paginate(15));
+        $organizations = Organization::query()
+            ->where('parent_organization_id', $organization->getKey())
+            ->orWhereIn('id', [
+                $organization->getKey(),
+            ])->paginate(15);
+
+        return OrganizationResource::collection($organizations);
     }
 
     /**

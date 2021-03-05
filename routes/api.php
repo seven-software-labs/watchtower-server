@@ -37,9 +37,10 @@ Route::group(['middleware' => ['auth:sanctum']], function() {
         Route::apiResources([
             'organizations' => \App\Http\Controllers\OrganizationController::class,
             'organizations.channels' => \App\Http\Controllers\Organization\ChannelController::class,
+            'organizations.channel-organizations' => \App\Http\Controllers\Organization\ChannelOrganizationController::class,
             'organizations.departments' => \App\Http\Controllers\Organization\DepartmentController::class,
             'organizations.messages' => \App\Http\Controllers\Organization\MessageController::class,
-            'organizations.organizations' => \App\Http\Controllers\Organization\OrganizationController::class,
+            'organizations.child-organizations' => \App\Http\Controllers\Organization\OrganizationController::class,
             'organizations.priorities' => \App\Http\Controllers\Organization\PriorityController::class,
             'organizations.statuses' => \App\Http\Controllers\Organization\StatusController::class,
             'organizations.tickets' => \App\Http\Controllers\Organization\TicketController::class,
@@ -49,6 +50,8 @@ Route::group(['middleware' => ['auth:sanctum']], function() {
         // Channels
         Route::post('/organizations/{organization}/channels/attach', [\App\Http\Controllers\Organization\ChannelController::class, 'attach'])
             ->name('organizations.channels.attach');
+        Route::post('/organizations/{organization}/channels/{pivot_id}/update', [\App\Http\Controllers\Organization\ChannelController::class, 'updatePivot'])
+            ->name('organizations.channels.pivot.update');
 
         // Departments
         // Messages

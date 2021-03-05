@@ -27,6 +27,7 @@ class Ticket extends Model
         'channel_id',
         'department_id',
         'organization_id',
+        'master_organization_id',
         'priority_id',
         'status_id',
         'subject',

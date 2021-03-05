@@ -19,10 +19,12 @@ class CreateChannelOrganizationTable extends Migration
             $table->id();
             $table->string('name');
             $table->foreignId('channel_id')->constrained('channels');
-            $table->foreignId('department_id')->nullable()->constrained('departments');
+            $table->foreignId('department_id')->constrained('departments');
+            $table->foreignId('master_organization_id')->constrained('organizations');
             $table->foreignId('organization_id')->constrained('organizations');
             $table->boolean('is_active')->default(false);
             $table->json('settings');
+            $table->softDeletes();
             $table->timestamps();
         });
     }

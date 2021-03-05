@@ -1,10 +1,10 @@
 <?php
 
-namespace App\Models\Pivot;
+namespace App\Models;
 
-use Illuminate\Database\Eloquent\Relations\Pivot;
+use Illuminate\Database\Eloquent\Model;
 
-class ChannelOrganization extends Pivot
+class ChannelOrganization extends Model
 {
     /**
      * The table associated with the model.
@@ -21,18 +21,20 @@ class ChannelOrganization extends Pivot
     protected $fillable = [
         'name',
         'channel_id',
+        'department_id',
         'is_active',
         'organization_id',
+        'master_organization_id',
         'settings',
     ];
 
     /**
-     * The accessors to append to the model's array form.
-     *
+     * The relationships that are automatically loaded.
+     * 
      * @var array
      */
-    protected $appends = [
-        'channel_organization_id',
+    protected $with = [
+        'department',
     ];
 
     /**
@@ -57,14 +59,6 @@ class ChannelOrganization extends Pivot
     public function organization()
     {
         return $this->belongsTo(\App\Models\Organization::class);
-    }
-
-    /**
-     * Get the row id in a readable format.
-     */
-    public function getChannelOrganizationIdAttribute()
-    {
-        return $this->id;
     }
 
     /**

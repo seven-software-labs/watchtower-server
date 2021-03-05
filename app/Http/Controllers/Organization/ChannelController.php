@@ -4,9 +4,6 @@ namespace App\Http\Controllers\Organization;
 
 use App\Http\Controllers\Controller;
 use App\Models\Channel;
-use App\Models\Organization;
-use App\Models\Pivot\ChannelOrganization;
-use App\Http\Resources\ChannelResource;
 use Illuminate\Http\Request;
 
 class ChannelController extends Controller
@@ -16,9 +13,9 @@ class ChannelController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    public function index(Organization $organization)
+    public function index()
     {
-        return ChannelResource::collection($organization->channels()->paginate(15));
+        // ...
     }
 
     /**
@@ -38,12 +35,9 @@ class ChannelController extends Controller
      * @param  \App\Models\Channel  $channel
      * @return \Illuminate\Http\Response
      */
-    public function show($channel_organization_id)
+    public function show(Channel $channel)
     {
-        $channelOrganization = ChannelOrganization::find($channel_organization_id);
-        $channel = $channelOrganization->organization->channels()->find($channelOrganization->channel_id);
-
-        return $channel;
+        // ...
     }
 
     /**
@@ -53,27 +47,9 @@ class ChannelController extends Controller
      * @param  \App\Models\Channel  $channel
      * @return \Illuminate\Http\Response
      */
-    public function update(Request $request, $channel_organization_id)
+    public function update(Request $request, Channel $channel)
     {
-        $channelOrganization = ChannelOrganization::findOrFail($channel_organization_id);
-        
-        $channelOrganization->update($request->all());
-
-        return $channelOrganization;
-    }
-
-    /**
-     * Attach a resource to the specified resource in storage.
-     */
-    public function attach(Request $request, Organization $organization)
-    {
-        $organization->channels()->attach($request->get('channel_id'), [
-            'name' => $request->get('name'),
-            'settings' => collect($request->get('settings', []))->toJSON(),
-            'is_active' => $request->get('is_active'),
-        ]);
-
-        return $organization->channels;
+        // ...
     }
 
     /**
