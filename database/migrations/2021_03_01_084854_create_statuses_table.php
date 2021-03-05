@@ -18,6 +18,8 @@ class CreateStatusesTable extends Migration
             $table->id();
             $table->string('name');
             $table->string('color')->default('gray');
+            $table->foreignId('organization_id')->constrained('organizations');
+            $table->boolean('is_default');
             $table->softDeletes();
             $table->timestamps();
         });
@@ -44,14 +46,20 @@ class CreateStatusesTable extends Migration
             [
                 'name' => 'Open',
                 'color' => 'green',
+                'organization_id' => 1,
+                'is_default' => true,
             ],
             [
                 'name' => 'Pending',
                 'color' => 'yellow',
+                'organization_id' => 1,
+                'is_default' => false,
             ],
             [
                 'name' => 'Closed',
                 'color' => 'black',
+                'organization_id' => 1,
+                'is_default' => false,
             ],
         ]);
 

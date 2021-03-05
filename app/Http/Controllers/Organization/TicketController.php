@@ -17,8 +17,7 @@ class TicketController extends Controller
      */
     public function index(Organization $organization)
     {
-        $organizationIds = array_merge([$organization->getKey()], $organization->organizations->pluck('id'));
-        $tickets = Ticket::whereIn('organization_id', $organizationIds)
+        $tickets = Ticket::where('master_organization_id', $organization->getKey())
             ->paginate(15);
 
         return TicketResource::collection($tickets);

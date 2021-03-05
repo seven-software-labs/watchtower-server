@@ -18,6 +18,8 @@ class CreatePrioritiesTable extends Migration
             $table->id();
             $table->string('name');
             $table->string('color')->default('gray');
+            $table->foreignId('organization_id')->constrained('organizations');
+            $table->boolean('is_default');
             $table->softDeletes();
             $table->timestamps();
         });
@@ -44,18 +46,26 @@ class CreatePrioritiesTable extends Migration
             [
                 'name' => 'Low',
                 'color' => 'gray',
+                'organization_id' => 1,
+                'is_default' => false,
             ],
             [
                 'name' => 'Medium',
                 'color' => 'blue',
+                'organization_id' => 1,
+                'is_default' => true,
             ],
             [
                 'name' => 'High',
                 'color' => 'yellow',
+                'organization_id' => 1,
+                'is_default' => false,
             ],
             [
                 'name' => 'Critical',
                 'color' => 'red',
+                'organization_id' => 1,
+                'is_default' => false,
             ],
         ]);
         

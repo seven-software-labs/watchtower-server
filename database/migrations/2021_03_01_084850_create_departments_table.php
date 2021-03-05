@@ -18,6 +18,8 @@ class CreateDepartmentsTable extends Migration
             $table->id();
             $table->string('name');
             $table->string('color')->default('gray');
+            $table->foreignId('organization_id')->constrained('organizations');
+            $table->boolean('is_default');
             $table->softDeletes();
             $table->timestamps();
         });
@@ -43,6 +45,8 @@ class CreateDepartmentsTable extends Migration
         Department::create([
             'name' => 'Client Success',
             'color' => 'gray',
+            'organization_id' => 1,
+            'is_default' => true,
         ]);
     }
 }

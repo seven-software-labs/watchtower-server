@@ -25,6 +25,8 @@ class Priority extends Model
     protected $fillable = [
         'name',
         'color',
+        'organization_id',
+        'is_default',
     ];
 
     /**
@@ -45,8 +47,6 @@ class Priority extends Model
      */
     public function organizations()
     {
-        return $this->belongsToMany(Organization::class)
-            ->using(Pivot\OrganizationPriority::class)
-            ->withPivot('is_default');
+        return $this->belongsTo(Organization::class);
     }
 }

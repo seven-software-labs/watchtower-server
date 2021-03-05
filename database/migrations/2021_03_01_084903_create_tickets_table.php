@@ -50,6 +50,7 @@ class CreateTicketsTable extends Migration
         Ticket::create([
             'department_id' => 1,
             'organization_id' => 1,
+            'master_organization_id' => 1,
             'priority_id' => 1,
             'status_id' => 1,
             'subject' => 'This is an example ticket',

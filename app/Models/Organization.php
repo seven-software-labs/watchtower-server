@@ -38,8 +38,6 @@ class Organization extends Model
     {
         return $this->hasManyThrough(Channel::class, ChannelOrganization::class, 'channel_id', 'id')
             ->with('channel_organization');
-            // ->using(Pivot\ChannelOrganization::class)
-            // ->withPivot('id', 'name', 'is_active', 'settings', 'department_id');
     }    
 
     /**
@@ -55,9 +53,7 @@ class Organization extends Model
      */
     public function departments()
     {
-        return $this->belongsToMany(Department::class)
-            ->using(Pivot\OrganizationDepartment::class)
-            ->withPivot('is_default');
+        return $this->hasMany(Department::class);
     }
 
     /**
@@ -65,9 +61,7 @@ class Organization extends Model
      */
     public function priorities()
     {
-        return $this->belongsToMany(Priority::class)
-            ->using(Pivot\OrganizationPriority::class)
-            ->withPivot('is_default');
+        return $this->hasMany(Priority::class);
     }
 
     /**
@@ -75,9 +69,7 @@ class Organization extends Model
      */
     public function statuses()
     {
-        return $this->belongsToMany(Status::class)
-            ->using(Pivot\OrganizationStatus::class)
-            ->withPivot('is_default');
+        return $this->hasMany(Status::class);
     }
 
     /**

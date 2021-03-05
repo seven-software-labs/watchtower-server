@@ -25,6 +25,8 @@ class Department extends Model
     protected $fillable = [
         'name',
         'color',
+        'organization_id',
+        'is_default',
     ];
 
     /**
@@ -41,12 +43,10 @@ class Department extends Model
     }
 
     /**
-     * Get the organizations that belong to the department.
+     * Get the organization that belong to the department.
      */
     public function organizations()
     {
-        return $this->belongsToMany(Organization::class)
-            ->using(Pivot\OrganizationDepartment::class)
-            ->withPivot('is_default');
+        return $this->belongsTo(Organization::class);
     }
 }

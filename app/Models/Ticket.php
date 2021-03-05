@@ -89,6 +89,22 @@ class Ticket extends Model
     }
     
     /**
+     * Get the organization that this ticket belongs to.
+     */
+    public function organization()
+    {
+        return $this->belongsTo(Organization::class);
+    }
+    
+    /**
+     * Get the master organization that this ticket belongs to.
+     */
+    public function masterOrganization()
+    {
+        return $this->belongsTo(Organization::class, 'master_organization_id');
+    }
+    
+    /**
      * Get the priority that this ticket belongs to.
      */
     public function priority()
