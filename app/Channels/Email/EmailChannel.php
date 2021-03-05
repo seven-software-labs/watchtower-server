@@ -205,9 +205,6 @@ class EmailChannel implements ChannelInterface {
             return;
         }
 
-        // Get the last 15 emails only
-        // array_splice($mailIds, 1);
-
         // Loop through the emails.
         foreach($mailIds as $mailId)
         {
@@ -231,10 +228,10 @@ class EmailChannel implements ChannelInterface {
 
             // If the ticket exists, we can ignore this mail.
             if ($hasMessage) {
-                echo "Mail ID $mailId already has a message. \n";
+                logger()->info("Mail ID $mailId already has a message.");
                 continue;
             } else {
-                echo "Creating message for Mail ID $mailId";
+                logger()->info("Creating message for Mail ID $mailId");
             }
 
             // Lets find or create the user that this ticket is going to belong to.
