@@ -40,9 +40,13 @@ class TicketController extends Controller
      * @param  \App\Models\Ticket  $ticket
      * @return \Illuminate\Http\Response
      */
-    public function show(Ticket $ticket)
+    public function show(Request $request, Organization $organization, Ticket $ticket)
     {
-        //
+        $ticket = $organization->tickets()
+            ->with('messages.user.roles')
+            ->find($ticket->getKey());
+
+        return new TicketResource($ticket);
     }
 
     /**

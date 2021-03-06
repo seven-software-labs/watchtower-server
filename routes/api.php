@@ -46,19 +46,5 @@ Route::group(['middleware' => ['auth:sanctum']], function() {
             'organizations.tickets' => \App\Http\Controllers\Organization\TicketController::class,
             'organizations.users' => \App\Http\Controllers\Organization\UserController::class,
         ]);
-
-        // Channels
-        Route::post('/organizations/{organization}/channels/attach', [\App\Http\Controllers\Organization\ChannelController::class, 'attach'])
-            ->name('organizations.channels.attach');
-        Route::post('/organizations/{organization}/channels/{pivot_id}/update', [\App\Http\Controllers\Organization\ChannelController::class, 'updatePivot'])
-            ->name('organizations.channels.pivot.update');
-
-        // Departments
-        // Messages
-        // Organizations
-        // Priorities
-        // Statuses
-        // Tickets
-        // Users
     });
 });
