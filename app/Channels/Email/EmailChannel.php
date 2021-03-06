@@ -26,6 +26,9 @@ use PHPMailer\PHPMailer\PHPMailer;
 use PHPMailer\PHPMailer\SMTP;
 use PHPMailer\PHPMailer\Exception;
 
+use App\Channels\Email\ProcessSync;
+use Illuminate\Support\Facades\Redis;
+
 class EmailChannel implements ChannelInterface {
     /**
      * The channel name.
@@ -67,7 +70,7 @@ class EmailChannel implements ChannelInterface {
             'class' => get_class($this),
         ]);
 
-        $channelSettings = collect([
+        collect([
             [
                 'name' => 'server',
                 'description' => '',
@@ -118,24 +121,7 @@ class EmailChannel implements ChannelInterface {
      * Uninstall the channel.
      */
     public function uninstall() {
-        // Get channel.
-        $channel = Channel::where('name', $this->getChannelName())
-            ->where('slug', $this->getChannelSlug())
-            ->first();
-
-        // Get channel settings.
-        $channelSettings = ChannelSetting::where('channel_id', $channel->getKey())
-            ->get();
-
-        // Remove pivot entries
-        // DB::table('channel_organization_settings')
-        //     ->whereIn('channel_setting_id', $channelSettings->pluck('id'))
-        //     ->delete();
-
-        // Remove channel settings.
-        $channelSettings->delete();
-        // Remove channel.
-        $channel->delete();
+        // ...
     }
 
     /**
@@ -174,131 +160,7 @@ class EmailChannel implements ChannelInterface {
      */
     public function syncChannel(): void
     {
-        $channel = Channel::where('slug', $this->getChannelSlug())
-            ->firstOrFail();
-
-        $channelOrganizations = \App\Models\ChannelOrganization::query()
-            ->where('channel_id', $channel->getKey())
-            ->where('is_active', true)
-            ->get();
-
-        $channelOrganizations->each(function($channelOrganization) {
-            $this->syncInbox($channelOrganization);
-        });
-    }
-
-    /**
-     * Sync the inbox folder in the mailbox.
-     */
-    public function syncInbox(\App\Models\ChannelOrganization $channelOrganization): void
-    {
-        $mailbox = $this->getMailbox($channelOrganization);
-        $settings = $channelOrganization->settings;
-
-        try {
-            $since = Carbon::now()->startOfDay()->format('d F Y H:i:s');
-            $mailIds = $mailbox->searchMailbox('TO "'.$settings->get('email').'" SINCE "'.$since.'" UNDELETED');
-            if(!$mailIds) return;
-            rsort($mailIds);
-        } catch(\PhpImap\Exceptions\ConnectionException $ex) {
-            logger()->error("IMAP connection failed: " . $ex);
-            return;
-        }
-
-        // Loop through the emails.
-        foreach($mailIds as $mailId)
-        {
-            // Lets pull the mail from the mailbox.
-            $mail = $mailbox->getMail($mailId, false);
-
-            $message_id = $mail->headers->message_id;
-            $in_reply_to = $mail->headers->in_reply_to ?? null;
-
-            // Check if there's a message with the mail id.
-            $hasMessage = Message::where('source_id', $message_id)->exists();
-
-            // Lets check if there's an "in_reply_to" and find a message for it.
-            if(!blank($in_reply_to)) {
-                $parentMessage = Message::select('ticket_id', 'source_id')
-                    ->where('source_id', $in_reply_to)
-                    ->first();
-            } else {
-                $parentMessage = null;
-            }
-
-            // If the ticket exists, we can ignore this mail.
-            if ($hasMessage) {
-                logger()->info("Mail ID $mailId already has a message.");
-                continue;
-            } else {
-                logger()->info("Creating message for Mail ID $mailId");
-            }
-
-            // Lets find or create the user that this ticket is going to belong to.
-            $user = User::firstOrCreate([
-                'email' => $mail->fromAddress,
-            ], [
-                'name' => $mail->fromName ?? $mail->fromAddress,
-                'password' => Hash::make(Str::random(40)),
-            ]);
-
-            // Lets create the ticket and the message.
-            if($parentMessage) {
-                $ticket = $parentMessage->ticket;
-            } else {
-                $ticket = Ticket::updateOrCreate([
-                    'subject' => $mail->subject,
-                    'user_id' => $user->getKey(),
-                    'organization_id' => $channelOrganization->organization_id,
-                ], [
-                    'ticket_type_id' => TicketType::TICKET,
-                    'department_id' => $channelOrganization->department_id,
-                    'status_id' => 1, // Open
-                    'priority_id' => 2, // Medium
-                    'channel_id' => $channelOrganization->channel_id,
-                ]);
-            }
-
-            $ticket->messages()->create([
-                'content' => $mail->textHtml,
-                'message_type_id' => 1,
-                'user_id' => $user->getKey(),
-                'source_id' => $message_id,
-                'source_created_at' => Carbon::parse($mail->headers->date)->format('Y-m-d H:i:s'),
-            ]);
-        }
-
-        // Disconnect from mailbox
-        $mailbox->disconnect();
-    }
-
-    /**
-     * Create the mailbox.
-     */
-    public function getMailbox(\App\Models\ChannelOrganization $channelOrganization, $folder = 'INBOX'): \PhpImap\Mailbox
-    {
-        // Get the settings collection.
-        $settings = $channelOrganization->settings;
-
-        // Build the server string.
-        $server = $settings->get('server');
-        $port = $settings->get('port');
-        $mode = $settings->get('mode');
-        $encryption = $settings->get('encryption');
-
-        // Build the mailbox.
-        $mailbox = new \PhpImap\Mailbox(
-            "{{$server}:{$port}/{$mode}/{$encryption}}$folder", 
-            $settings->get('email'), 
-            $settings->get('password'),
-            false,
-            'US-ASCII',
-        );
-
-        // Configure connection arguments.
-        $mailbox->setConnectionArgs(OP_READONLY);
-
-        return $mailbox;
+        ProcessSync::dispatch();
     }
 
     /**
