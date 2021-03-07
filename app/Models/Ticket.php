@@ -46,16 +46,6 @@ class Ticket extends Model
         'user.organizations',
         'status',
     ];
-
-    /**
-     * Get the last reply attribute for the ticket.
-     */
-    public function getLastRepliedAtAttribute($value)
-    {
-        if(!$value) return "";
-        
-        return Carbon::parse($value)->diffForHumans(null, true, true);
-    }
     
     /**
      * Get the user that this ticket belongs to.
