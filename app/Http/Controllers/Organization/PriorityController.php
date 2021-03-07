@@ -6,62 +6,58 @@ use App\Http\Controllers\Controller;
 use App\Models\Priority;
 use App\Models\Organization;
 use App\Http\Resources\PriorityResource;
+use App\Http\Requests\Priority\CreatePriorityRequest;
+use App\Http\Requests\Priority\DeletePriorityRequest;
+use App\Http\Requests\Priority\UpdatePriorityRequest;
+use Illuminate\Http\Resources\Json\AnonymousResourceCollection;
 use Illuminate\Http\Request;
 
 class PriorityController extends Controller
 {
     /**
      * Display a listing of the resource.
-     *
-     * @return \Illuminate\Http\Response
      */
-    public function index(Organization $organization)
+    public function index(Request $request, Organization $organization): AnonymousResourceCollection
     {
-        return PriorityResource::collection($organization->priorities()->paginate(15));
+        $priorities = $organization->priorities()
+            ->paginate(15);
+
+        return PriorityResource::collection($priorities);
     }
 
     /**
      * Store a newly created resource in storage.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @return \Illuminate\Http\Response
      */
-    public function store(Request $request)
+    public function store(CreatePriorityRequest $request, Organization $organization): PriorityResource
     {
-        //
+        $priority = Priority::create($request->validated());
+
+        return new PriorityResource($priority);
     }
 
     /**
      * Display the specified resource.
-     *
-     * @param  \App\Models\Priority  $priority
-     * @return \Illuminate\Http\Response
      */
-    public function show(Priority $priority)
+    public function show(Request $request, Organization $organization, Priority $priority): PriorityResource
     {
-        //
+        return new PriorityResource($priority);
     }
 
     /**
      * Update the specified resource in storage.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @param  \App\Models\Priority  $priority
-     * @return \Illuminate\Http\Response
      */
-    public function update(Request $request, Priority $priority)
+    public function update(UpdatePriorityRequest $request, Organization $organization, Priority $priority)
     {
-        //
+        $priority->update($request->validated());
+
+        return new PriorityResource($priority->fresh());
     }
 
     /**
      * Remove the specified resource from storage.
-     *
-     * @param  \App\Models\Priority  $priority
-     * @return \Illuminate\Http\Response
      */
-    public function destroy(Priority $priority)
+    public function destroy(DeletePriorityRequest $request, Priority $priority): bool
     {
-        //
+        return $priority->delete();
     }
 }

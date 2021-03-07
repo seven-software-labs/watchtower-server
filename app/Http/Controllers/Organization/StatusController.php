@@ -6,62 +6,58 @@ use App\Http\Controllers\Controller;
 use App\Models\Status;
 use App\Models\Organization;
 use App\Http\Resources\StatusResource;
+use App\Http\Requests\Status\CreateStatusRequest;
+use App\Http\Requests\Status\DeleteStatusRequest;
+use App\Http\Requests\Status\UpdateStatusRequest;
+use Illuminate\Http\Resources\Json\AnonymousResourceCollection;
 use Illuminate\Http\Request;
 
 class StatusController extends Controller
 {
     /**
      * Display a listing of the resource.
-     *
-     * @return \Illuminate\Http\Response
      */
-    public function index(Organization $organization)
+    public function index(Request $request, Organization $organization): AnonymousResourceCollection
     {
-        return StatusResource::collection($organization->statuses()->paginate(15));
+        $statuses = $organization->statuses()
+            ->paginate(15);
+
+        return StatusResource::collection($statuses);
     }
 
     /**
      * Store a newly created resource in storage.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @return \Illuminate\Http\Response
      */
-    public function store(Request $request)
+    public function store(CreateStatusRequest $request, Organization $organization): StatusResource
     {
-        //
+        $status = Status::create($request->validated());
+
+        return new StatusResource($status);
     }
 
     /**
      * Display the specified resource.
-     *
-     * @param  \App\Models\Status  $status
-     * @return \Illuminate\Http\Response
      */
-    public function show(Status $status)
+    public function show(Request $request, Organization $organization, Status $status): StatusResource
     {
-        //
+        return new StatusResource($status);
     }
 
     /**
      * Update the specified resource in storage.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @param  \App\Models\Status  $status
-     * @return \Illuminate\Http\Response
      */
-    public function update(Request $request, Status $status)
+    public function update(UpdateStatusRequest $request, Organization $organization, Status $status)
     {
-        //
+        $status->update($request->validated());
+
+        return new StatusResource($status->fresh());
     }
 
     /**
      * Remove the specified resource from storage.
-     *
-     * @param  \App\Models\Status  $status
-     * @return \Illuminate\Http\Response
      */
-    public function destroy(Status $status)
+    public function destroy(DeleteStatusRequest $request, Status $status): bool
     {
-        //
+        return $status->delete();
     }
 }
