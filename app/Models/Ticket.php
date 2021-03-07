@@ -32,6 +32,7 @@ class Ticket extends Model
         'subject',
         'ticket_type_id',
         'user_id',
+        'last_replied_at',
     ];
 
     /**
@@ -47,20 +48,11 @@ class Ticket extends Model
     ];
 
     /**
-     * The accessors to append to the model's array form.
-     *
-     * @var array
-     */
-    protected $appends = [
-        'last_reply',
-    ];
-
-    /**
      * Get the last reply attribute for the ticket.
      */
-    public function getLastReplyAttribute()
+    public function getLastRepliedAtAttribute($value)
     {
-        return Carbon::parse($this->messages->max('source_created_at'))->diffForHumans(null, true, true);
+        return Carbon::parse($value)->diffForHumans(null, true, true);
     }
     
     /**

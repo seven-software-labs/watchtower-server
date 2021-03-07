@@ -46,27 +46,6 @@ class CreateMessagesTable extends Migration
      */
     public function seed()
     {
-        $messages = collect([
-            // Customer Reply
-            [
-                'content' => "Sweat equity is the most valuable equity there is. Know your business and industry better than anyone else in the world. Love what you do or don't do it.",
-                'message_type_id' => 1,
-                'ticket_id' => 1,
-                'user_id' => 2,
-                'source_created_at' => now(),
-            ],
-            // Operator Reply
-            [
-                'content' => "I'm not trying to make friends, I'm trying to make money.",
-                'message_type_id' => 1,
-                'ticket_id' => 1,
-                'user_id' => 1,
-                'source_created_at' => now(),
-            ],
-        ]);
-
-        $messages->each(function($message) {
-            Message::create($message);
-        });
+        // ...
     }
 }

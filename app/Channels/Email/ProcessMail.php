@@ -11,9 +11,11 @@ use Carbon\Carbon;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
-use Illuminate\Support\Facades\DB;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Str;
 
 class ProcessMail implements ShouldQueue
 {
@@ -89,6 +91,7 @@ class ProcessMail implements ShouldQueue
                 'email' => $mail->fromAddress,
             ], [
                 'name' => $mail->fromName ?? $mail->fromAddress,
+                'password' => Hash::make(Str::random(40)),
             ]);
 
             // Lets create the ticket and the message.
@@ -116,8 +119,10 @@ class ProcessMail implements ShouldQueue
                 ]);
             }
 
+            logger()->info("Completed message for Mail ID {$this->mailId}");
             DB::commit();
         } catch (\Exception $e) {
+            logger()->error($e);
             DB::rollback();
         }
 

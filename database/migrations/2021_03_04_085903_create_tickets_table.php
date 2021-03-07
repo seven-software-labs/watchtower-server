@@ -24,6 +24,7 @@ class CreateTicketsTable extends Migration
             $table->foreignId('priority_id')->constrained('priorities');
             $table->foreignId('status_id')->constrained('statuses');
             $table->foreignId('ticket_type_id')->constrained('ticket_types');
+            $table->dateTime('last_replied_at')->nullable();
             $table->softDeletes();
             $table->timestamps();
         });
@@ -46,14 +47,6 @@ class CreateTicketsTable extends Migration
      */
     public function seed()
     {
-        Ticket::create([
-            'department_id' => 1,
-            'organization_id' => 1,
-            'priority_id' => 1,
-            'status_id' => 1,
-            'subject' => 'This is an example ticket',
-            'ticket_type_id' => 1,
-            'user_id' => 2,
-        ]);
+        // ...
     }
 }

@@ -18,8 +18,7 @@ class TicketController extends Controller
     public function index(Organization $organization)
     {
         $tickets = $organization->tickets()
-            ->join('messages', 'messages.id', '=', 'tickets.id')
-            ->orderBy('messages.source_created_at', 'asc')
+            ->orderBy('last_replied_at', 'asc')
             ->paginate(15);
 
         return TicketResource::collection($tickets);
