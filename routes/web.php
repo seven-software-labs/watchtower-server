@@ -15,6 +15,10 @@ use Inertia\Inertia;
 |
 */
 
+Route::get('/event', function() {
+    \App\Events\Ticket\TicketCreated::dispatch(\App\Models\Ticket::first());
+});
+
 Route::get('/', function () {
     return Inertia::render('Welcome', [
         'canLogin' => Route::has('login'),

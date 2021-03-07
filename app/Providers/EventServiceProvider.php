@@ -3,8 +3,10 @@
 namespace App\Providers;
 
 use App\Models\Message;
+use App\Models\Ticket;
 use App\Models\User;
 use App\Observers\MessageObserver;
+use App\Observers\TicketObserver;
 use App\Observers\UserObserver;
 
 use Illuminate\Auth\Events\Registered;
@@ -33,6 +35,7 @@ class EventServiceProvider extends ServiceProvider
     public function boot()
     {
         Message::observe(MessageObserver::class);
+        Ticket::observe(TicketObserver::class);
         User::observe(UserObserver::class);
     }
 }
