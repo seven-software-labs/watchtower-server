@@ -60,7 +60,7 @@ class Ticket extends Model
      */
     public function getLastReplyAttribute()
     {
-        return Carbon::parse($this->messages->max('source_created_at'))->diffForHumans();
+        return Carbon::parse($this->messages->max('source_created_at'))->diffForHumans(null, true, true);
     }
     
     /**

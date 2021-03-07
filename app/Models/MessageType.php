@@ -10,6 +10,9 @@ class MessageType extends Model
 {
     use HasFactory, SoftDeletes;
 
+    const REPLY = 1;
+    const NOTE = 2;
+
     /**
      * The table associated with the model.
      *

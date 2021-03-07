@@ -6,16 +6,17 @@ use App\Http\Controllers\Controller;
 use App\Models\ChannelOrganization;
 use App\Models\Organization;
 use App\Http\Resources\ChannelOrganizationResource;
-use Illuminate\Http\Request;
+use App\Http\Requests\ChannelOrganization\CreateChannelOrganizationRequest;
+use App\Http\Requests\ChannelOrganization\DeleteChannelOrganizationRequest;
+use App\Http\Requests\ChannelOrganization\UpdateChannelOrganizationRequest;
+use Illuminate\Http\Resources\Json\AnonymousResourceCollection;
 
 class ChannelOrganizationController extends Controller
 {
     /**
      * Display a listing of the resource.
-     *
-     * @return \Illuminate\Http\Response
      */
-    public function index(Organization $organization)
+    public function index(Organization $organization): AnonymousResourceCollection
     {
         $channelOrganizations = ChannelOrganization::where('organization_id', $organization->getKey())
             ->with('department', 'channel', 'organization')
@@ -26,11 +27,8 @@ class ChannelOrganizationController extends Controller
 
     /**
      * Store a newly created resource in storage.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @return \Illuminate\Http\Response
      */
-    public function store(Request $request, Organization $organization)
+    public function store(CreateChannelOrganizationRequest $request, Organization $organization): ChannelOrganizationResource
     {
         $channelOrganization = ChannelOrganization::create([
             'name' => $request->get('name'),
@@ -46,23 +44,16 @@ class ChannelOrganizationController extends Controller
 
     /**
      * Display the specified resource.
-     *
-     * @param  \App\Models\ChannelOrganization  $channelOrganization
-     * @return \Illuminate\Http\Response
      */
-    public function show(Organization $organization, ChannelOrganization $channelOrganization)
+    public function show(Organization $organization, ChannelOrganization $channelOrganization): ChannelOrganizationResource
     {
         return new ChannelOrganizationResource($channelOrganization);
     }
 
     /**
      * Update the specified resource in storage.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @param  \App\Models\ChannelOrganization  $channelOrganization
-     * @return \Illuminate\Http\Response
      */
-    public function update(Request $request, Organization $organization, ChannelOrganization $channelOrganization)
+    public function update(UpdateChannelOrganizationRequest $request, Organization $organization, ChannelOrganization $channelOrganization): ChannelOrganizationResource
     {
         $channelOrganization->update([
             'name' => $request->get('name'),
@@ -77,12 +68,9 @@ class ChannelOrganizationController extends Controller
 
     /**
      * Remove the specified resource from storage.
-     *
-     * @param  \App\Models\ChannelOrganization  $channelOrganization
-     * @return \Illuminate\Http\Response
      */
-    public function destroy(ChannelOrganization $channelOrganization)
+    public function destroy(DeleteChannelOrganizationRequest $request, ChannelOrganization $channelOrganization): bool
     {
-        // ...
+        return $channelOrganization->delete();
     }
 }

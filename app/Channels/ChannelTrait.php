@@ -2,6 +2,7 @@
 
 namespace App\Channels;
 
+use App\Models\ChannelOrganization;
 use App\Models\Message;
 trait ChannelTrait {
     /**
@@ -23,8 +24,8 @@ trait ChannelTrait {
     /**
      * Send a message through the channel.
      */
-    public function sendMessage(Message $message)
+    public function sendMessage(ChannelOrganization $channelOrganization, Message $message)
     {
-        return $this->channelModule->sendMessage($message);
+        return $this->channelModule->sendMessage($channelOrganization, $message);
     }
 }
