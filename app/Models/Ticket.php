@@ -52,6 +52,8 @@ class Ticket extends Model
      */
     public function getLastRepliedAtAttribute($value)
     {
+        if(!$value) return "";
+        
         return Carbon::parse($value)->diffForHumans(null, true, true);
     }
     

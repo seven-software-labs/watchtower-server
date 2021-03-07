@@ -16,7 +16,9 @@ class MessageObserver
     {
         // Lets update the message's ticket to reflect
         // the last_reply column appropriately.
-        $message->ticket->last_replied_at = $message->source_created_at;
+        $ticket = $message->ticket;
+        $ticket->last_replied_at = $message->source_created_at;
+        $ticket->save();
     }
 
     /**
