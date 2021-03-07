@@ -3,7 +3,6 @@
 namespace App\Http\Controllers;
 
 use App\Models\Ticket;
-use App\Http\Resources\TicketResource;
 use Illuminate\Http\Request;
 
 class TicketController extends Controller
@@ -15,11 +14,7 @@ class TicketController extends Controller
      */
     public function index(Request $request)
     {
-        $user = auth()->user();
-        $organization = $user->primaryOrganization;
-        $tickets = $organization->tickets()->paginate(15);
-
-        return TicketResource::collection($tickets);
+        // ...
     }
 
     /**
@@ -41,7 +36,7 @@ class TicketController extends Controller
      */
     public function show(Ticket $ticket)
     {
-        return new TicketResource($ticket->load('messages.user.roles'));
+        // ...
     }
 
     /**

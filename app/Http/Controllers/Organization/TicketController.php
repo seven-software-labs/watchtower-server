@@ -6,18 +6,26 @@ use App\Http\Controllers\Controller;
 use App\Models\Ticket;
 use App\Models\Organization;
 use App\Http\Resources\TicketResource;
+use Illuminate\Http\Resources\Json\AnonymousResourceCollection;
 use Illuminate\Http\Request;
 
 class TicketController extends Controller
 {
     /**
      * Display a listing of the resource.
-     *
-     * @return \Illuminate\Http\Response
      */
-    public function index(Organization $organization)
+    public function index(Request $request, Organization $organization): AnonymousResourceCollection
     {
         $tickets = $organization->tickets()
+            ->when($request->filled('status_id'), function($query) use($request) {
+                $query->where('status_id', $request->get('status_id'));
+            })
+            ->when($request->filled('priority_id'), function($query) use($request) {
+                $query->where('priority_id', $request->get('priority_id'));
+            })
+            ->when($request->filled('department_id'), function($query) use($request) {
+                $query->where('department_id', $request->get('department_id'));
+            })        
             ->orderBy('last_replied_at', 'desc')
             ->paginate(15);
 
@@ -37,11 +45,8 @@ class TicketController extends Controller
 
     /**
      * Display the specified resource.
-     *
-     * @param  \App\Models\Ticket  $ticket
-     * @return \Illuminate\Http\Response
      */
-    public function show(Request $request, Organization $organization, Ticket $ticket)
+    public function show(Request $request, Organization $organization, Ticket $ticket): TicketResource
     {
         $ticket = $organization->tickets()
             ->with('messages.user.roles')
