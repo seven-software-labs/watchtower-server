@@ -57,7 +57,7 @@ class CreateStatusesTable extends Migration
             ],
             [
                 'name' => 'Closed',
-                'color' => 'black',
+                'color' => 'gray',
                 'organization_id' => 1,
                 'is_default' => false,
             ],
