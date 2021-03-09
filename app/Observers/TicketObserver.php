@@ -17,7 +17,6 @@ class TicketObserver
      */
     public function created(Ticket $ticket)
     {
-        logger()->info('Dispatching Ticket Created for ticket:'.$ticket->getKey());
         TicketCreated::dispatch($ticket);
     }
 

@@ -25,7 +25,6 @@ class TicketCreated implements ShouldBroadcast
      */
     public function __construct(Ticket $ticket)
     {
-        logger()->info("Constructing TicketCreated for {$ticket->getKey()}");
         $this->ticket = $ticket;
     }
 

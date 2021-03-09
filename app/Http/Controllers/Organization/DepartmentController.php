@@ -56,7 +56,7 @@ class DepartmentController extends Controller
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(DeleteDepartmentRequest $request, Department $department): bool
+    public function destroy(DeleteDepartmentRequest $request, Organization $organization, Department $department): bool
     {
         return $department->delete();
     }

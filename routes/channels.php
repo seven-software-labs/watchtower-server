@@ -17,6 +17,14 @@ Broadcast::channel('ticket-channel', function() {
     return true;
 });
 
+Broadcast::channel('organization-{organizationId}-department-{departmentId}-channel', function($user, $organizationId, $departmentId) {
+    return true;
+});
+
+Broadcast::channel('organization-{organizationId}-department-channel', function($user, $organizationId) {
+    return true;
+});
+
 Broadcast::channel('App.Models.User.{id}', function ($user, $id) {
     return (int) $user->id === (int) $id;
 });

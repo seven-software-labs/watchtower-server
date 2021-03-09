@@ -22,7 +22,14 @@ Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
 });
 
 Route::group(['middleware' => ['auth:sanctum']], function() {
-    Route::get('me', [\App\Http\Controllers\MeController::class, 'index']);
+    // Utility Routes
+    Route::get('ping', function() {
+        return 'pong';
+    });
+
+    // Me
+    Route::get('me', [\App\Http\Controllers\MeController::class, 'index'])
+        ->name('me');
 
     // General Resources
     Route::apiResources([

@@ -13,7 +13,19 @@ class CreateDepartmentRequest extends FormRequest
      */
     public function authorize()
     {
-        return false;
+        return true;
+    }
+
+    /**
+     * Prepare the data for validation.
+     *
+     * @return void
+     */
+    protected function prepareForValidation()
+    {
+        $this->merge([
+            'organization_id' => $this->get('organization_id', auth()->user()->primary_organization->getKey()),
+        ]);
     }
 
     /**
@@ -24,7 +36,10 @@ class CreateDepartmentRequest extends FormRequest
     public function rules()
     {
         return [
-            //
+            'name' => ['required', 'string', 'max:255'],
+            'color' => ['required', 'string'],
+            'is_default' => ['required', 'boolean'],
+            'organization_id' => ['required', 'exists:organizations,id'],
         ];
     }
 }
