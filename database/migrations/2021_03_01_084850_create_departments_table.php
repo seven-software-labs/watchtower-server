@@ -20,7 +20,7 @@ class CreateDepartmentsTable extends Migration
             $table->string('color')->default('gray');
             $table->foreignId('organization_id')->constrained('organizations');
             $table->boolean('is_default');
-            $table->boolean('is_removeable')->default(false);
+            $table->boolean('is_removeable')->default(true);
             $table->softDeletes();
             $table->timestamps();
         });
@@ -43,11 +43,6 @@ class CreateDepartmentsTable extends Migration
      */
     public function seed()
     {
-        Department::create([
-            'name' => 'Client Success',
-            'color' => 'gray',
-            'organization_id' => 1,
-            'is_default' => true,
-        ]);
+        // ...
     }
 }

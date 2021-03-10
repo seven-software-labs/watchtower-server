@@ -18,6 +18,10 @@ Broadcast::channel('ticket-channel', function() {
     return true;
 });
 
+Broadcast::channel('organization-{organizationId}-channel', function($user, $organizationId) {
+    return true;
+});
+
 Broadcast::channel('organization-{organizationId}-{model}-{modelId}-channel', function($user, $organizationId, $model, $modelId) {
     return true;
 });

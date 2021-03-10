@@ -126,6 +126,5 @@ class CreatePermissionTables extends Migration
         $customer = Role::create(['name' => 'customer']);
 
         User::find(1)->assignRole(['administrator', 'operator']);
-        User::find(2)->assignRole(['customer']);
     }
 }

@@ -58,6 +58,8 @@ class PriorityController extends Controller
      */
     public function destroy(DeletePriorityRequest $request, Organization $organization, Priority $priority): bool
     {
+        logger()->info('trying to delete');
+        logger()->info($priority);
         return $priority->delete();
     }
 }

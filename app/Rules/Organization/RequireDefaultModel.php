@@ -32,7 +32,7 @@ class RequireDefaultModel implements Rule
     {
         // Check if the model has siblings in the organization.
         $hasOtherModels = ($this->model->where('organization_id', $this->model->organization_id)
-            ->count() > 2);
+            ->count() > 1);
 
         // Check if the model is being set to not default
         // and if the model has siblings.

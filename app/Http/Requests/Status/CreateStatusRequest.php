@@ -24,7 +24,7 @@ class CreateStatusRequest extends FormRequest
     protected function prepareForValidation()
     {
         $this->merge([
-            'organization_id' => $this->get('organization_id', auth()->user()->primary_organization->getKey()),
+            'organization_id' => $this->get('organization_id', auth()->user()->organization->getKey()),
         ]);
     }
 

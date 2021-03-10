@@ -27,6 +27,7 @@ class Department extends Model
         'color',
         'organization_id',
         'is_default',
+        'is_removeable',
     ];
 
     /**

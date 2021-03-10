@@ -85,7 +85,77 @@ class Organization extends Model
      */
     public function users()
     {
-        return $this->belongsToMany(User::class)
-            ->using(Pivot\OrganizationUser::class);
+        return $this->hasMany(User::class);
     }    
+
+    /**
+     * Perform the initial setup for an organization.
+     */
+    public function setupOrganization()
+    {
+        logger()->info('SETUPP');
+        // Create Departments
+        $departments = [
+            [
+                'name' => 'Client Success',
+                'color' => 'gray',
+                'is_default' => true,
+            ],
+        ];
+
+        foreach($departments as $department) {
+            $this->departments()->create($department);
+        }
+
+        // Create Priorities
+        $priorities = [
+            [
+                'name' => 'Low',
+                'color' => 'gray',
+                'is_default' => false,
+            ],
+            [
+                'name' => 'Medium',
+                'color' => 'blue',
+                'is_default' => true,
+            ],
+            [
+                'name' => 'High',
+                'color' => 'yellow',
+                'is_default' => false,
+            ],
+            [
+                'name' => 'Critical',
+                'color' => 'red',
+                'is_default' => false,
+            ],
+        ];
+
+        foreach ($priorities as $priority) {
+            $this->priorities()->create($priority);
+        }
+
+        // Create Statuses
+        $statuses = [
+            [
+                'name' => 'Open',
+                'color' => 'green',
+                'is_default' => true,
+            ],
+            [
+                'name' => 'Pending',
+                'color' => 'yellow',
+                'is_default' => false,
+            ],
+            [
+                'name' => 'Closed',
+                'color' => 'gray',
+                'is_default' => false,
+            ],
+        ];
+
+        foreach($statuses as $status) {
+            $this->statuses()->create($status);
+        }        
+    }
 }
