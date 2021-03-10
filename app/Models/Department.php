@@ -45,7 +45,7 @@ class Department extends Model
     /**
      * Get the organization that belong to the department.
      */
-    public function organizations()
+    public function organization()
     {
         return $this->belongsTo(Organization::class);
     }

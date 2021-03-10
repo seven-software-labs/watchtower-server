@@ -56,7 +56,7 @@ class StatusController extends Controller
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(DeleteStatusRequest $request, Status $status): bool
+    public function destroy(DeleteStatusRequest $request, Organization $organization, Status $status): bool
     {
         return $status->delete();
     }

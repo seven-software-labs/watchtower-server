@@ -45,7 +45,7 @@ class Status extends Model
     /**
      * Get the organizations that belong to the status.
      */
-    public function organizations()
+    public function organization()
     {
         return $this->belongsTo(Organization::class);
     }

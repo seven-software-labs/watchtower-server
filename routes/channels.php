@@ -1,6 +1,7 @@
 <?php
 
 use Illuminate\Support\Facades\Broadcast;
+use Illuminate\Support\Str;
 
 /*
 |--------------------------------------------------------------------------
@@ -14,6 +15,14 @@ use Illuminate\Support\Facades\Broadcast;
 */
 
 Broadcast::channel('ticket-channel', function() {
+    return true;
+});
+
+Broadcast::channel('organization-{organizationId}-{model}-{modelId}-channel', function($user, $organizationId, $model, $modelId) {
+    return true;
+});
+
+Broadcast::channel('organization-{organizationId}-{model}-channel', function($user, $organizationId, $model) {
     return true;
 });
 
