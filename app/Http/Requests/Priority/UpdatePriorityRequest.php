@@ -1,16 +1,16 @@
 <?php
 
-namespace App\Http\Requests\Department;
+namespace App\Http\Requests\Priority;
 
 use App\Rules\Organization\RequireDefaultModel;
 use Illuminate\Foundation\Http\FormRequest;
 
-class UpdateDepartmentRequest extends FormRequest
+class UpdatePriorityRequest extends FormRequest
 {
     /**
-     * The department that's going to be updated.
+     * The priority that's going to be updated.
      */
-    private $department;
+    private $priority;
 
     /**
      * Prepare the data for validation.
@@ -19,7 +19,7 @@ class UpdateDepartmentRequest extends FormRequest
      */
     protected function prepareForValidation()
     {
-        $this->department = $this->route()->parameter('department');
+        $this->priority = $this->route()->parameter('priority');
     }
 
     /**
@@ -42,7 +42,7 @@ class UpdateDepartmentRequest extends FormRequest
         return [
             'name' => ['required', 'string', 'max:255'],
             'color' => ['required', 'string'],
-            'is_default' => ['required', 'boolean', new RequireDefaultModel($this->department)],
+            'is_default' => ['required', 'boolean', new RequireDefaultModel($this->priority)],
         ];
     }
 }
