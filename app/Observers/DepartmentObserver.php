@@ -10,6 +10,17 @@ use App\Events\Department\DepartmentDeleted;
 class DepartmentObserver
 {
     /**
+     * Handle the Department "creating" event.
+     *
+     * @param  \App\Models\Department  $department
+     * @return void
+     */
+    public function creating(Department $department)
+    {
+        // ...
+    }
+
+    /**
      * Handle the Department "created" event.
      *
      * @param  \App\Models\Department  $department
@@ -29,9 +40,11 @@ class DepartmentObserver
     public function updating(Department $department)
     {
         if($department->is_default) {
-            $department->organization->departments()->update([
-                'is_default' => false,
-            ]);
+            Department::where('organization_id', $department->organization_id)
+                ->where('id', '!=', $department->getKey())
+                ->update([
+                    'is_default' => false,
+                ]);
         }
     }
 
@@ -43,6 +56,19 @@ class DepartmentObserver
      */
     public function updated(Department $department)
     {
+        $hasDefaultDepartment = Department::where('is_default', true)
+            ->where('organization_id', $department->organization_id)
+            ->exists();
+
+        if(!$hasDefaultDepartment) {
+            Department::where('organization_id', $department->organization_id)
+                ->where('id', '!=', $department->getKey())
+                ->first()
+                ->update([
+                    'is_default' => true,
+                ]);
+        } 
+
         DepartmentUpdated::dispatch($department);
     }
 
@@ -56,10 +82,12 @@ class DepartmentObserver
     {
         if(count($department->organization->departments) < 2) {
             throw new \Exception("Cannot delete the only department in the organization.");
+            return false;
         }
 
         if(count($department->tickets) > 0) {
             throw new \Exception("Cannot delete a department with tickets.");
+            return false;
         }
 
         if($department->is_default) {
