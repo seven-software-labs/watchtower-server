@@ -89,7 +89,7 @@ class PriorityObserver
             throw new \Exception("Cannot delete a priority with tickets.");
             return false;
         }
-
+        return false;
         if($priority->is_default) {
             $priority->organization->priorities()->first()->update([
                 'is_default' => true,

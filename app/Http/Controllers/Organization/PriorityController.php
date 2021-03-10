@@ -56,7 +56,7 @@ class PriorityController extends Controller
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(DeletePriorityRequest $request, Priority $priority): bool
+    public function destroy(DeletePriorityRequest $request, Organization $organization, Priority $priority): bool
     {
         return $priority->delete();
     }
