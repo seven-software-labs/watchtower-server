@@ -20,7 +20,7 @@ class CreateStatusesTable extends Migration
             $table->string('color')->default('gray');
             $table->foreignId('organization_id')->constrained('organizations');
             $table->boolean('is_default')->default(false);
-            $table->boolean('is_removeable')->default(false);
+            $table->boolean('is_removeable')->default(true);
             $table->softDeletes();
             $table->timestamps();
         });

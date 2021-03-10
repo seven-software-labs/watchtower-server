@@ -20,6 +20,7 @@ class CreateDepartmentsTable extends Migration
             $table->string('color')->default('gray');
             $table->foreignId('organization_id')->constrained('organizations');
             $table->boolean('is_default');
+            $table->boolean('is_removeable')->default(false);
             $table->softDeletes();
             $table->timestamps();
         });
