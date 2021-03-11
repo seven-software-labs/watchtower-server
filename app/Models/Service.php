@@ -2,21 +2,20 @@
 
 namespace App\Models;
 
-use App\Channels\ChannelTrait;
-use Illuminate\Database\Eloquent\Factories\HasFactory;
+use App\Services\ServiceTrait;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
-class Channel extends Model
+class Service extends Model
 {
-    use ChannelTrait, HasFactory, SoftDeletes;
+    use ServiceTrait, SoftDeletes;
 
     /**
      * The table associated with the model.
      *
      * @var string
      */
-    protected $table = 'channels';
+    protected $table = 'services';
 
     /**
      * The attributes that are mass assignable.
@@ -25,28 +24,31 @@ class Channel extends Model
      */
     protected $fillable = [
         'name',
-        'organization_id',
+        'class',
+        'slug',
         'is_active',
+        'settings_schema',
     ];
 
     /**
      * The relationships that are automatically loaded.
      */
     protected $with = [
-        // 'service',
-        'department',
+        // ...
     ];
 
     /**
      * The relationship counts that are automatically appended.
      */
-    protected $withCount = ['tickets'];
-    
+    protected $withCount = [
+        // ...
+    ];
+
     /**
-     * Get the tickets that belong to this channel.
+     * Get the channel that belongs to the service.
      */
-    public function tickets()
+    public function channel()
     {
-        return $this->hasMany(Ticket::class);
+        return $this->belongsTo(Channel::class);
     }
 }

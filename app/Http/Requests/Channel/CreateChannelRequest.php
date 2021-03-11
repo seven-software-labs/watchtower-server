@@ -13,7 +13,21 @@ class CreateChannelRequest extends FormRequest
      */
     public function authorize()
     {
-        return false;
+        return true;
+    }
+
+    /**
+     * Prepare the data for validation.
+     *
+     * @return void
+     */
+    protected function prepareForValidation()
+    {
+        if(!$this->filled('organization_id')) {
+            $this->merge([
+                'organization_id' => auth()->user()->organization_id,
+            ]);
+        }
     }
 
     /**
@@ -25,6 +39,7 @@ class CreateChannelRequest extends FormRequest
     {
         return [
             'name' => ['required'],
+            'organization_id' => ['exists:organizations,id'],
             'is_active' => ['required', 'boolean'],
         ];
     }

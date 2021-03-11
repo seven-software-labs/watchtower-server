@@ -90,6 +90,11 @@ class DepartmentObserver
             return false;
         }
 
+        if(count($department->channels) > 0) {
+            throw new \Exception("Cannot delete a department with channels.");
+            return false;
+        }
+
         if($department->is_default) {
             $department->organization->departments()->first()->update([
                 'is_default' => true,

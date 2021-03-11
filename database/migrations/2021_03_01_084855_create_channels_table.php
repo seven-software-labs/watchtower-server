@@ -16,8 +16,10 @@ class CreateChannelsTable extends Migration
         Schema::create('channels', function (Blueprint $table) {
             $table->id();
             $table->string('name');
-            $table->string('class')->unique();
-            $table->string('slug')->unique();
+            $table->foreignId('organization_id')->constrained('organizations');
+            $table->foreignId('department_id')->constrained('departments');
+            $table->foreignId('service_id')->constrained('services');
+            $table->json('settings')->nullable();
             $table->boolean('is_active')->default(false);
             $table->softDeletes();
             $table->timestamps();

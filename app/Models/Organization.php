@@ -36,8 +36,7 @@ class Organization extends Model
      */
     public function channels()
     {
-        return $this->hasManyThrough(Channel::class, ChannelOrganization::class, 'channel_id', 'id')
-            ->with('channel_organization');
+        return $this->hasMany(Channel::class);
     }    
 
     /**
@@ -93,7 +92,6 @@ class Organization extends Model
      */
     public function setupOrganization()
     {
-        logger()->info('SETUPP');
         // Create Departments
         $departments = [
             [

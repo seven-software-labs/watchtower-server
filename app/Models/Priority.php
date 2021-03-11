@@ -40,7 +40,8 @@ class Priority extends Model
      */
     public function tickets()
     {
-        return $this->hasMany(Ticket::class);
+        return $this->hasMany(Ticket::class)
+            ->where('tickets.organization_id', $this->organization_id);
     }
 
     /**
