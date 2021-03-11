@@ -51,4 +51,12 @@ class Service extends Model
     {
         return $this->belongsTo(Channel::class);
     }
+
+    /**
+     * Get the settings schema attribute.
+     */
+    public function getSettingsSchemaAttribute($value)
+    {
+        return collect(json_decode($value, true));
+    }
 }

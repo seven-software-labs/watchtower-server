@@ -29,9 +29,10 @@ class ChannelController extends Controller
     /**
      * Store a newly created resource in storage.
      */
-    public function store(CreateChannelRequest $request, Organization $organization): ChannelResource
+    public function store(CreateChannelRequest $request, Organization $organization)
     {
-        $channel = Channel::create($request->validated());
+        $channel = $organization->channels()
+            ->create($request->validated());
 
         return new ChannelResource($channel);
     }

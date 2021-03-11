@@ -25,15 +25,18 @@ class Channel extends Model
      */
     protected $fillable = [
         'name',
+        'department_id',
         'organization_id',
+        'service_id',
         'is_active',
+        'settings',
     ];
 
     /**
      * The relationships that are automatically loaded.
      */
     protected $with = [
-        // 'service',
+        'service',
         'department',
     ];
 
@@ -41,6 +44,22 @@ class Channel extends Model
      * The relationship counts that are automatically appended.
      */
     protected $withCount = ['tickets'];
+    
+    /**
+     * Get the department that this channel belongs to.
+     */
+    public function department()
+    {
+        return $this->belongsTo(Department::class);
+    }    
+    
+    /**
+     * Get the service that this channel belongs to.
+     */
+    public function service()
+    {
+        return $this->belongsTo(Service::class);
+    }    
     
     /**
      * Get the tickets that belong to this channel.

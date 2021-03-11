@@ -42,12 +42,60 @@ class Logger implements ServiceInterface {
      */
     public function install(): void
     {
-        Service::create([
+        Service::updateOrCreate([
             'name' => $this->getServiceName(),
             'slug' => $this->getServiceSlug(),
+        ], [
             'class' => get_class($this),
             'settings_schema' => collect([
-                // ...
+                [
+                    'label' => 'Prefix',
+                    'name' => 'prefix',
+                    'placeholder' => 'Prefix for log entries.',
+                    'description' => 'Prefix for log entries.',
+                    'field_type' => 'text',
+                ],
+                [
+                    'label' => 'Log Level',
+                    'name' => 'log_level',
+                    'placeholder' => 'Log Level',
+                    'description' => 'Log Level',
+                    'field_type' => 'select',
+                    'options' => [
+                        [
+                            'label' => 'Emergency',
+                            'value' => 'emergency',
+                        ],
+                        [
+                            'label' => 'Alert',
+                            'value' => 'alert',
+                        ],
+                        [
+                            'label' => 'Critical',
+                            'value' => 'critical',
+                        ],
+                        [
+                            'label' => 'Error',
+                            'value' => 'error',
+                        ],
+                        [
+                            'label' => 'Warning',
+                            'value' => 'warning',
+                        ],
+                        [
+                            'label' => 'Notice',
+                            'value' => 'notice',
+                        ],
+                        [
+                            'label' => 'Info',
+                            'value' => 'info',
+                        ],
+                        [
+                            'label' => 'Debug',
+                            'value' => 'debug',
+                        ],
+                    ],
+                ],
             ])->toJSON(),
         ]);
     }
