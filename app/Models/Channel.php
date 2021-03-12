@@ -44,6 +44,14 @@ class Channel extends Model
      * The relationship counts that are automatically appended.
      */
     protected $withCount = ['tickets'];
+
+    /**
+     * Get the channel's settings attribute.
+     */
+    public function getSettingsAttribute($value)
+    {
+        return collect(json_decode($value));
+    }
     
     /**
      * Get the department that this channel belongs to.

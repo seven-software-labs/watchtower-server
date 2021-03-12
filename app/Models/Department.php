@@ -34,8 +34,8 @@ class Department extends Model
      * The relationship counts that are automatically appended.
      */
     protected $withCount = [
+        'channels',
         'tickets', 
-        'channels'
     ];
 
     /**

@@ -2,12 +2,14 @@
 
 namespace App\Providers;
 
+use App\Models\Channel;
 use App\Models\Department;
 use App\Models\Message;
 use App\Models\Priority;
 use App\Models\Status;
 use App\Models\Ticket;
 use App\Models\User;
+use App\Observers\ChannelObserver;
 use App\Observers\DepartmentObserver;
 use App\Observers\MessageObserver;
 use App\Observers\PriorityObserver;
@@ -40,6 +42,7 @@ class EventServiceProvider extends ServiceProvider
      */
     public function boot()
     {
+        Channel::observe(ChannelObserver::class);
         Department::observe(DepartmentObserver::class);
         Message::observe(MessageObserver::class);
         Priority::observe(PriorityObserver::class);

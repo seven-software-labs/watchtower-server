@@ -24,7 +24,10 @@ class UpdateChannelRequest extends FormRequest
     public function rules()
     {
         return [
-            //
+            'name' => ['required'],
+            'department_id' => ['exists:departments,id'],
+            'is_active' => ['required', 'boolean'],
+            'settings' => ['required'],
         ];
     }
 }
