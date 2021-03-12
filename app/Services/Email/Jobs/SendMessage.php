@@ -1,8 +1,8 @@
 <?php
 
-namespace App\Channels\Email;
+namespace App\Services\Email;
 
-use App\Models\ChannelOrganization;
+use App\Models\Channel;
 use App\Models\Message;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
@@ -18,11 +18,11 @@ class SendMessage implements ShouldQueue
     use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
 
     /**
-     * The channel organization that we're sending with.
+     * The channel that we're sending with.
      * 
-     * @var \App|Models\ChannelOrganization
+     * @var \App|Models\Channel
      */
-    public $channelOrganization;
+    public $channel;
 
     /**
      * The message we're sending
@@ -36,9 +36,9 @@ class SendMessage implements ShouldQueue
      *
      * @return void
      */
-    public function __construct(ChannelOrganization $channelOrganization, Message $message)
+    public function __construct(Channel $channel, Message $message)
     {
-        $this->channelOrganization = $channelOrganization->withoutRelations();
+        $this->channel = $channel->withoutRelations();
         $this->message = $message;
     }
 
@@ -49,8 +49,8 @@ class SendMessage implements ShouldQueue
      */
     public function getMail()
     {
-        // Get the channel organizations' settings.
-        $settings = $this->channelOrganization->settings;
+        // Get the channel settings.
+        $settings = $this->channel->settings;
 
         // Instantiate the mail class.
         $mail = new PHPMailer();
@@ -58,7 +58,7 @@ class SendMessage implements ShouldQueue
         // Configure send settings.
         $mail->SMTPDebug = SMTP::DEBUG_SERVER;                      //Enable verbose debug output
         $mail->isSMTP();                                            //Send using SMTP
-        $mail->Host       = 'smtp.gmail.com';                     //Set the SMTP server to send through
+        $mail->Host       = $settings->get('email_server');
         $mail->SMTPAuth   = true;                                   //Enable SMTP authentication
         $mail->Username   = $settings->get('email');               //SMTP username
         $mail->Password   = $settings->get('password');

@@ -1,8 +1,8 @@
 <?php
 
-namespace App\Channels\Email;
+namespace App\Services\Email\Jobs;
 
-use App\Models\ChannelOrganization;
+use App\Models\Channel;
 use App\Models\Message;
 use App\Models\TicketType;
 use App\Models\Ticket;
@@ -24,7 +24,7 @@ class ProcessMail implements ShouldQueue
     /**
      * The channel organization to be synced.
      */
-    public $channelOrganization;
+    public $channel;
 
     /**
      * The mailbox to be synced.
@@ -41,9 +41,9 @@ class ProcessMail implements ShouldQueue
      *
      * @return void
      */
-    public function __construct(ChannelOrganization $channelOrganization, \PhpImap\Mailbox $mailbox, int $mailId)
+    public function __construct(Channel $channel, \PhpImap\Mailbox $mailbox, int $mailId)
     {
-        $this->channelOrganization = $channelOrganization;
+        $this->channel = $channel;
         $this->mailbox = $mailbox;
         $this->mailId = $mailId;
     }
@@ -55,8 +55,6 @@ class ProcessMail implements ShouldQueue
      */
     public function handle()
     {
-        logger()->info("Processing: {$this->mailId}");
-
         // Lets pull the mail from the mailbox.
         $mail = $this->mailbox->getMail($this->mailId, false);
 
@@ -90,6 +88,7 @@ class ProcessMail implements ShouldQueue
             $user = User::firstOrCreate([
                 'email' => $mail->fromAddress,
             ], [
+                'organization_id' => $this->channel->organization_id,
                 'name' => $mail->fromName ?? $mail->fromAddress,
                 'password' => Hash::make(Str::random(40)),
             ]);
@@ -101,13 +100,13 @@ class ProcessMail implements ShouldQueue
                 $ticket = Ticket::updateOrCreate([
                     'subject' => $mail->subject,
                     'user_id' => $user->getKey(),
-                    'organization_id' => $this->channelOrganization->organization_id,
+                    'organization_id' => $this->channel->organization_id,
                 ], [
                     'ticket_type_id' => TicketType::TICKET,
-                    'department_id' => $this->channelOrganization->department_id,
-                    'status_id' => 1, // Open @todo make this the default
-                    'priority_id' => 2, // Medium @todo make this the default
-                    'channel_id' => $this->channelOrganization->channel_id,
+                    'department_id' => $this->channel->department_id,
+                    'status_id' => $this->channel->organization->default_status->getKey(),
+                    'priority_id' => $this->channel->organization->default_priority->getKey(),
+                    'channel_id' => $this->channel->channel_id,
                 ]);
 
                 $ticket->messages()->create([
@@ -118,8 +117,7 @@ class ProcessMail implements ShouldQueue
                     'source_created_at' => Carbon::parse($mail->headers->date)->format('Y-m-d H:i:s'),
                 ]);
             }
-
-            logger()->info("Completed message for Mail ID {$this->mailId}");
+            
             DB::commit();
         } catch (\Exception $e) {
             logger()->error($e);

@@ -2,14 +2,13 @@
 
 namespace App\Models;
 
-use App\Channels\ChannelTrait;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
 class Channel extends Model
 {
-    use ChannelTrait, HasFactory, SoftDeletes;
+    use HasFactory, SoftDeletes;
 
     /**
      * The table associated with the model.
@@ -60,6 +59,14 @@ class Channel extends Model
     {
         return $this->belongsTo(Department::class);
     }    
+
+    /**
+     * Get the organization that belongs to the priority.
+     */
+    public function organization()
+    {
+        return $this->belongsTo(Organization::class);
+    }
     
     /**
      * Get the service that this channel belongs to.

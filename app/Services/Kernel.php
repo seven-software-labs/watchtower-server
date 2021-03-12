@@ -10,7 +10,7 @@ class Kernel
     public static function getModules(): array
     {
         return [
-            // 'Email' => '\App\Services\Mailgun\Mailgun',
+            'Email' => '\App\Services\Email\Email',
             // 'Facebook' => '\App\Services\Facebook\Facebook',
             'Logger' => '\App\Services\Logger\Logger',
             // 'Twitter' => '\App\Services\Twitter\Twitter',

@@ -2,31 +2,31 @@
 
 namespace App\Services;
 
-use App\Models\ChannelOrganization;
+use App\Models\Channel;
 use App\Models\Message;
 
 trait ServiceTrait {
     /**
-     * Get the channel's corresponding channel module.
+     * Get the service's corresponding service module.
      */
-    public function getChannelModuleAttribute()
+    public function getServiceModuleAttribute()
     {
         return new $this->class;
     }
 
     /**
-     * Sync the channel's messages with Watchtower tickets.
+     * Sync the service's messages with Watchtower tickets.
      */
-    public function syncChannel()
+    public function syncService()
     {
-        $this->channelModule->syncChannel();
+        $this->serviceModule->syncService();
     }
 
     /**
      * Send a message through the channel.
      */
-    public function sendMessage(ChannelOrganization $channelOrganization, Message $message)
+    public function sendMessage(Channel $channel, Message $message)
     {
-        return $this->channelModule->sendMessage($channelOrganization, $message);
+        return $this->serviceModule->sendMessage($channel, $message);
     }
 }

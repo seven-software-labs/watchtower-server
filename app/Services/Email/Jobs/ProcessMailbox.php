@@ -1,8 +1,9 @@
 <?php
 
-namespace App\Channels\Email;
+namespace App\Services\Email\Jobs;
 
-use App\Channels\Email\ProcessMail;
+use App\Models\Channel;
+use App\Services\Email\Jobs\ProcessMail;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
@@ -15,20 +16,20 @@ class ProcessMailbox implements ShouldQueue
     use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
 
     /**
-     * The channel organization to be synced.
+     * The channel to be synced.
      * 
-     * @var \App\Models\ChannelOrganization;
+     * @var \App\Models\Channel;
      */
-    public $channelOrganization;
+    public $channel;
 
     /**
      * Create a new job instance.
      *
      * @return void
      */
-    public function __construct(\App\Models\ChannelOrganization $channelOrganization)
+    public function __construct(Channel $channel)
     {
-        $this->channelOrganization = $channelOrganization;
+        $this->channel = $channel;
     }
 
     /**
@@ -37,18 +38,17 @@ class ProcessMailbox implements ShouldQueue
     public function getMailbox(): \PhpImap\Mailbox
     {
         // Get the settings collection.
-        $settings = $this->channelOrganization->settings;
+        $settings = $this->channel->settings;
 
         // Build the server string.
-        $server = $settings->get('server');
+        $server = $settings->get('email_server');
         $port = $settings->get('port');
-        $mode = $settings->get('mode');
-        $encryption = $settings->get('encryption');
+        $service = $settings->get('service');
         $folder = 'INBOX';
 
         // Build the mailbox.
         $mailbox = new \PhpImap\Mailbox(
-            "{{$server}:{$port}/{$mode}/{$encryption}}$folder", 
+            "{{$server}:{$port}/{$service}/ssl}$folder", 
             $settings->get('email'), 
             $settings->get('password'),
             false,
@@ -69,7 +69,7 @@ class ProcessMailbox implements ShouldQueue
     public function handle()
     {
         // Get the settings collection.
-        $settings = $this->channelOrganization->settings;
+        $settings = $this->channel->settings;
 
         // Generate the mailbox.
         $mailbox = $this->getMailbox();
@@ -80,12 +80,12 @@ class ProcessMailbox implements ShouldQueue
             if(!$mailIds) return;
             rsort($mailIds);
         } catch(\PhpImap\Exceptions\ConnectionException $ex) {
-            logger()->error("IMAP connection failed: " . $ex);
+            logger()->error("IMAP Connection Failed: " . $ex);
             return;
         }
         
         foreach($mailIds as $mailId) {
-            ProcessMail::dispatch($this->channelOrganization, $mailbox, $mailId);
+            ProcessMail::dispatch($this->channel, $mailbox, $mailId);
         }
     }
 }

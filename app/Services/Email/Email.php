@@ -1,25 +1,26 @@
 <?php
 
-namespace App\Services\Logger;
+namespace App\Services\Email;
 
 use App\Models\Message;
 use App\Models\Service;
+use App\Services\Email\Jobs\ProcessSync;
 use App\Services\ServiceInterface;
 
-class Logger implements ServiceInterface {
+class Email implements ServiceInterface {
     /**
      * The service name.
      * 
      * @var string
      */
-    public $serviceName = 'Logger';
+    public $serviceName = 'Email';
 
     /**
      * The service slug.
      * 
      * @var string
      */
-    public $serviceSlug = 'logger';
+    public $serviceSlug = 'email';
 
     /**
      * Get the service name.
@@ -49,52 +50,49 @@ class Logger implements ServiceInterface {
             'class' => get_class($this),
             'settings_schema' => collect([
                 [
-                    'label' => 'Prefix',
-                    'name' => 'prefix',
-                    'placeholder' => 'Prefix for log entries.',
-                    'description' => 'Prefix for log entries.',
+                    'label' => 'Email Server',
+                    'name' => 'email_server',
+                    'description' => 'The email server. (e.g. imap.gmail.com)',
+                    'placeholder' => 'The email server. (e.g. imap.gmail.com)',
                     'field_type' => 'text',
                 ],
                 [
-                    'label' => 'Log Level',
-                    'name' => 'log_level',
-                    'placeholder' => 'Log Level',
-                    'description' => 'Log Level',
+                    'label' => 'Email Server Port',
+                    'name' => 'port',
+                    'description' => 'The port for the email server. (e.g. 993 for imap.gmail.com)',
+                    'placeholder' => 'The port for the email server. (e.g. 993 for imap.gmail.com)',
+                    'field_type' => 'text',
+                ],
+                [
+                    'label' => 'Service',
+                    'name' => 'service',
+                    'description' => 'The email service to use.',
+                    'placeholder' => 'The email service to use.',
                     'field_type' => 'select',
                     'options' => [
                         [
-                            'label' => 'Emergency',
-                            'value' => 'emergency',
+                            'label' => 'IMAP',
+                            'value' => 'imap',
                         ],
                         [
-                            'label' => 'Alert',
-                            'value' => 'alert',
-                        ],
-                        [
-                            'label' => 'Critical',
-                            'value' => 'critical',
-                        ],
-                        [
-                            'label' => 'Error',
-                            'value' => 'error',
-                        ],
-                        [
-                            'label' => 'Warning',
-                            'value' => 'warning',
-                        ],
-                        [
-                            'label' => 'Notice',
-                            'value' => 'notice',
-                        ],
-                        [
-                            'label' => 'Info',
-                            'value' => 'info',
-                        ],
-                        [
-                            'label' => 'Debug',
-                            'value' => 'debug',
+                            'label' => 'POP3',
+                            'value' => 'pop3',
                         ],
                     ],
+                ],
+                [
+                    'label' => 'Email',
+                    'name' => 'email',
+                    'description' => 'The email to be used.',
+                    'placeholder' => 'The email to be used.',
+                    'field_type' => 'email',
+                ],
+                [
+                    'label' => 'Password',
+                    'name' => 'password',
+                    'description' => 'The password for the email.',
+                    'placeholder' => 'The password for the email.',
+                    'field_type' => 'password',
                 ],
             ])->toJSON(),
         ]);
@@ -105,7 +103,9 @@ class Logger implements ServiceInterface {
      */
     public function syncService(): void
     {
-        logger()->info('Syncing logger service.');
+        logger()->info('Syncing Email Service');
+        
+        ProcessSync::dispatch();
     }
 
     /**

@@ -82,7 +82,7 @@ class User extends Authenticatable
     ];
 
     /**
-     * Get the organizations that belong to the user.
+     * Get the organization that belong to the user.
      */
     public function getIsCustomerAttribute()
     {

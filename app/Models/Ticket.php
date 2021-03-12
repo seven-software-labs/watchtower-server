@@ -43,7 +43,7 @@ class Ticket extends Model
         'channel',
         'department',
         'priority',
-        'user.organizations',
+        'user.organization',
         'status',
     ];
     

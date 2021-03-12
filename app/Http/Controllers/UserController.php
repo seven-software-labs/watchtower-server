@@ -15,11 +15,7 @@ class UserController extends Controller
      */
     public function index()
     {
-        $user = auth()->user();
-        $organization = $user->primaryOrganization;
-        $users = $organization->users()->paginate(15);
-
-        return UserResource::collection($users);
+        return UserResource::collection(User::paginate(15));
     }
 
     /**

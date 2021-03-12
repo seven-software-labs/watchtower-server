@@ -64,11 +64,27 @@ class Organization extends Model
     }
 
     /**
+     * Get the default priority for the organization.
+     */
+    public function getDefaultPriorityAttribute()
+    {
+        return $this->priorities()->where('is_default', true)->first();
+    }
+
+    /**
      * Get the statuses that belong to the organization.
      */
     public function statuses()
     {
         return $this->hasMany(Status::class);
+    }
+
+    /**
+     * Get the default status for the organization.
+     */
+    public function getDefaultStatusAttribute()
+    {
+        return $this->statuses()->where('is_default', true)->first();
     }
 
     /**

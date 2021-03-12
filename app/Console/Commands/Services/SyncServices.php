@@ -1,25 +1,25 @@
 <?php
 
-namespace App\Console\Commands\Channels;
+namespace App\Console\Commands\Services;
 
-use App\Models\Channel;
+use App\Models\Service;
 use Illuminate\Console\Command;
 
-class SyncChannels extends Command
+class SyncServices extends Command
 {
     /**
      * The name and signature of the console command.
      *
      * @var string
      */
-    protected $signature = 'channels:sync';
+    protected $signature = 'services:sync';
 
     /**
      * The console command description.
      *
      * @var string
      */
-    protected $description = 'Runs the sync command for all active channels.';
+    protected $description = 'Runs the sync command for all active services.';
 
     /**
      * Create a new command instance.
@@ -38,10 +38,10 @@ class SyncChannels extends Command
      */
     public function handle()
     {
-        $activeChannels = Channel::where('is_active', true)->get();
+        $activeServices = Service::where('is_active', true)->get();
 
-        $this->withProgressBar($activeChannels, function ($activeChannel) {
-            $activeChannel->syncChannel();
+        $this->withProgressBar($activeServices, function ($activeService) {
+            $activeService->syncService();
         });
 
         echo "\n";

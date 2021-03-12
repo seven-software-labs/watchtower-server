@@ -51,8 +51,7 @@ class Department extends Model
      */
     public function tickets()
     {
-        return $this->hasMany(Ticket::class)
-            ->where('tickets.organization_id', $this->organization_id);
+        return $this->hasMany(Ticket::class);
     }
     
     /**
@@ -60,7 +59,6 @@ class Department extends Model
      */
     public function channels()
     {
-        return $this->hasMany(Channel::class)
-            ->where('channels.organization_id', $this->organization_id);
+        return $this->hasMany(Channel::class);
     }
 }
