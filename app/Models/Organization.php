@@ -53,6 +53,14 @@ class Organization extends Model
     public function departments()
     {
         return $this->hasMany(Department::class);
+    }   
+
+    /**
+     * Get the messages that belong to the organization through tickets.
+     */
+    public function messages()
+    {
+        return $this->hasManyThrough(Message::class, Ticket::class);
     }
 
     /**
@@ -171,5 +179,16 @@ class Organization extends Model
         foreach($statuses as $status) {
             $this->statuses()->create($status);
         }        
+    }
+
+    /**
+     * Purge the organization of data.
+     */
+    public function purgeOrganization()
+    {
+        $this->messages()->truncate();
+        $this->tickets()->query()->delete();
+        $this->organizations()->where('id', '!=', 1)->delete();
+        $this->users()->where('id', '!=', 1)->delete();
     }
 }

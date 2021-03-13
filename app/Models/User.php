@@ -69,6 +69,7 @@ class User extends Authenticatable
      */
     protected $with = [
         'organization',
+        'channels',
     ];    
 
     /**
@@ -87,6 +88,15 @@ class User extends Authenticatable
     public function getIsCustomerAttribute()
     {
         return $this->hasRole('customer') || (!$this->hasRole(['administrator', 'operator']));
+    }
+    
+    /**
+     * Get the channels that belong to the user.
+     */
+    public function channels()
+    {
+        return $this->belongsToMany(Channel::class)
+            ->using(Pivot\ChannelUser::class);
     }
 
     /**

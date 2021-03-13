@@ -93,6 +93,8 @@ class ProcessMail implements ShouldQueue
                 'password' => Hash::make(Str::random(40)),
             ]);
 
+            $user->channels()->syncWithoutDetaching($this->channel->getKey());
+
             // Lets create the ticket and the message.
             if($parentMessage) {
                 $ticket = $parentMessage->ticket;
@@ -106,7 +108,7 @@ class ProcessMail implements ShouldQueue
                     'department_id' => $this->channel->department_id,
                     'status_id' => $this->channel->organization->default_status->getKey(),
                     'priority_id' => $this->channel->organization->default_priority->getKey(),
-                    'channel_id' => $this->channel->channel_id,
+                    'channel_id' => $this->channel->getKey(),
                 ]);
 
                 $ticket->messages()->create([

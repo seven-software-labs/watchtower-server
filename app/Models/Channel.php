@@ -83,4 +83,13 @@ class Channel extends Model
     {
         return $this->hasMany(Ticket::class);
     }
+
+    /**
+     * Get the users that belong to the channel.
+     */
+    public function users()
+    {
+        return $this->belongsToMany(User::class)
+            ->using(Pivot\ChannelUser::class);
+    }
 }

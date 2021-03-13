@@ -2,6 +2,7 @@
 
 namespace App\Services;
 
+use App\Models\Channel;
 use App\Models\Message;
 
 interface ServiceInterface {
@@ -25,7 +26,7 @@ interface ServiceInterface {
      * 
      * This should create a new message for a ticket.
      */
-    public function sendMessage(Message $message): bool;
+    public function sendMessage(Channel $channel, Message $message): bool;
 
     /**
      * Receives a message for a ticket.

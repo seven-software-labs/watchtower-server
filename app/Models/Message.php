@@ -34,6 +34,13 @@ class Message extends Model
     ];
 
     /**
+     * The relationships that are automatically loaded.
+     */
+    protected $with = [
+        'user',
+    ];
+
+    /**
      * Get the ticket that this message belongs to.
      */
     public function ticket()

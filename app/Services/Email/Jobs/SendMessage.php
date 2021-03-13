@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Services\Email;
+namespace App\Services\Email\Jobs;
 
 use App\Models\Channel;
 use App\Models\Message;
@@ -52,18 +52,21 @@ class SendMessage implements ShouldQueue
         // Get the channel settings.
         $settings = $this->channel->settings;
 
+        logger()->info('settings');
+        logger()->info($settings);
+
         // Instantiate the mail class.
         $mail = new PHPMailer();
 
         // Configure send settings.
         $mail->SMTPDebug = SMTP::DEBUG_SERVER;                      //Enable verbose debug output
         $mail->isSMTP();                                            //Send using SMTP
-        $mail->Host       = $settings->get('email_server');
+        $mail->Host       = 'smtp.gmail.com'; // @todo Replace This
         $mail->SMTPAuth   = true;                                   //Enable SMTP authentication
         $mail->Username   = $settings->get('email');               //SMTP username
         $mail->Password   = $settings->get('password');
         $mail->SMTPSecure = PHPMailer::ENCRYPTION_STARTTLS;         //Enable TLS encryption; `PHPMailer::ENCRYPTION_SMTPS` encouraged
-        $mail->Port       = 587;
+        $mail->Port       = 587; // @todo Replace This
         
         return $mail;
     }
@@ -91,6 +94,11 @@ class SendMessage implements ShouldQueue
             $mail->Subject = $message->subject ?? "Re: ".$message->ticket->subject;
             $mail->Body    = $message->content;
             $mail->AltBody = $message->content;
+
+            foreach($message->ticket->messages()->where('is_sent', true) as $ticketMessage) {
+                $mail->addCustomHeader('In-Reply-To', $ticketMessage->source_id);
+                $mail->addCustomHeader('References', $ticketMessage->source_id);
+            }
 
             if($mail->send()) {
                 $message->update([

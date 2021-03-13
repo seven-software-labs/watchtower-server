@@ -40,7 +40,7 @@ class MessageController extends Controller
         ]);
 
         if($request->get('message_type_id') == \App\Models\MessageType::REPLY) {
-            $ticket->channel->sendMessage($ticket->channel, $message);
+            $ticket->channel->service->sendMessage($ticket->channel, $message);
         }
 
         return new MessageResource($message);

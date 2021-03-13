@@ -2,9 +2,11 @@
 
 namespace App\Services\Email;
 
+use App\Models\Channel;
 use App\Models\Message;
 use App\Models\Service;
 use App\Services\Email\Jobs\ProcessSync;
+use App\Services\Email\Jobs\SendMessage;
 use App\Services\ServiceInterface;
 
 class Email implements ServiceInterface {
@@ -113,17 +115,9 @@ class Email implements ServiceInterface {
      * 
      * This should create a new message for a ticket.
      */
-    public function sendMessage(Message $message): bool 
+    public function sendMessage(Channel $channel, Message $message): bool 
     {
-        logger()->log('info', 'Sending Message', [
-            'message' => $message,
-        ]);
-
-        $message->update([
-            'is_sent' => true,
-            'is_delivered' => true,
-        ]);
-
+        SendMessage::dispatch($channel, $message);
         return true;
     }
 
