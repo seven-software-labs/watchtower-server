@@ -19,7 +19,7 @@ class UserController extends Controller
      */
     public function index(Organization $organization): AnonymousResourceCollection
     {
-        return UserResource::collection($organization->users()->paginate(15));
+        return UserResource::collection($organization->users()->with('channels')->paginate(15));
     }
 
     /**

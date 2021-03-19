@@ -57,9 +57,4 @@ Route::group(['middleware' => ['auth:sanctum']], function() {
             'organizations.users' => \App\Http\Controllers\Organization\UserController::class,
         ]);
     });
-
-    // Service Routes
-    Route::post('/services/{service}');
-
-    // Route::post('/organizations/{organization}/channels/{channel}/receive', fu
 });

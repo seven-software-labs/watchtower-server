@@ -45,17 +45,18 @@ class Ticket extends Model
     /**
      * Get the last replied at attribute.
      */
-    public function getLastRepliedAtAttribute($value)
+    public function getLastRepliedAtAttribute()
     {
-        return Carbon::parse($value)->diffForHumans();
+        $latestMessage = $this->messages()->latest()->first();
+        return Carbon::parse($latestMessage->source_created_at)->diffForHumans();
     }
 
     /**
      * Get the last replied at attribute.
      */
-    public function setLastRepliedAtAttribute($value)
+    public function setLastRepliedAtAttribute()
     {
-        return Carbon::parse($value)->format('Y-m-d H:i:s');
+        return Carbon::now();
     }
     
     /**

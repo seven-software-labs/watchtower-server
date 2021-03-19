@@ -132,4 +132,12 @@ class Email implements ServiceInterface {
             // ...
         ]);
     }
+
+    /**
+     * Get the additional actions for the service.
+     */
+    public function getActions(Channel $channel): array
+    {
+        return [];
+    }    
 }

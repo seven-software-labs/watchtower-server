@@ -45,11 +45,28 @@ class Channel extends Model
     protected $withCount = ['tickets'];
 
     /**
+     * The accessors to append to the model's array form.
+     *
+     * @var array
+     */
+    protected $appends = [
+        'serviceActions',
+    ];        
+
+    /**
      * Get the channel's settings attribute.
      */
     public function getSettingsAttribute($value)
     {
         return collect(json_decode($value));
+    }
+
+    /**
+     * Get the channel's actions from its service module.
+     */
+    public function getServiceActionsAttribute()
+    {
+        return $this->service->serviceModule->getActions($this);
     }
     
     /**

@@ -34,4 +34,9 @@ interface ServiceInterface {
      * This should create a new message for a ticket.
      */
     public function receiveMessage(mixed $data): Message;
+
+    /**
+     * Get the additional actions for the service.
+     */
+    public function getActions(Channel $channel): array;
 }

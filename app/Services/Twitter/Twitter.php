@@ -57,15 +57,17 @@ class Twitter implements ServiceInterface {
                 [
                     'label' => 'Access Token',
                     'name' => 'access_token',
-                    'description' => 'The access token for your twitter account.',
-                    'placeholder' => 'The access token for your twitter account.',
+                    'description' => '[Authorize your account after channel creation.]',
+                    'placeholder' => '[Authorize your account after channel creation.]',
+                    'readonly' => true,
                     'field_type' => 'password',
                 ],
                 [
                     'label' => 'Access Token Secret',
                     'name' => 'access_token_secret',
-                    'description' => 'The access token secret for your twitter account.',
-                    'placeholder' => 'The access token secret for your twitter account.',
+                    'description' => '[Authorize your account after channel creation.]',
+                    'placeholder' => '[Authorize your account after channel creation.]',
+                    'readonly' => true,
                     'field_type' => 'password',
                 ],
             ])->toJSON(),
@@ -111,18 +113,15 @@ class Twitter implements ServiceInterface {
     }
 
     /**
-     * Authorize a user for the channel.
+     * Get the additional actions for the service.
      */
-    public function authorizeUser(): void
+    public function getActions(Channel $channel): array
     {
-        // $authorizeResponse = Http::get('https://api.twitter.com/oauth/authorize');
-
-        // dd($authorizeResponse);
-
-        $response = Http::post('https://api.twitter.com/oauth/request_token', [
-            'oauth_callback' => 'http://watchtower.com/api',
-            'oauth_consumer_key' => 'Sc7cPoAwOaEvksBgnxJUKII0f',
-        ]);
-        dd($response->body());
+        return [
+            [
+                'label' => 'Authorize Account',
+                'path' => route('services.twitter.channels.authorize-account', ['channel_id' => $channel->getKey()]),
+            ],
+        ];
     }
 }

@@ -1,0 +1,17 @@
+type Priority {
+    id: ID!
+    name: String!
+    organization_id: ID!
+    organization: Organization! @belongsTo
+    color: String!
+    tickets_count: Int!
+    is_default: Boolean!
+    created_at: DateTime!
+    updated_at: DateTime!
+    deleted_at: DateTime
+}
+
+extend type Query {
+    priorities: [Priority!]! @paginate(defaultCount: 15)
+    priority(id: ID @eq): Priority @find
+}

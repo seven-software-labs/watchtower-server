@@ -15,8 +15,10 @@ use Inertia\Inertia;
 |
 */
 
-Route::get('/event', function() {
-    \App\Events\Ticket\TicketCreated::dispatch(\App\Models\Ticket::first());
+Route::get('test', function() {
+    $channel = \App\Models\Channel::find(3);
+
+    dd($channel);
 });
 
 Route::get('/', function () {

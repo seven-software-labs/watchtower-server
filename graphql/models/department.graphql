@@ -1,0 +1,17 @@
+type Department {
+    id: ID!
+    name: String!
+    organization_id: ID!
+    organization: Organization! @belongsTo
+    color: String!
+    tickets_count: Int!
+    is_default: Boolean!
+    created_at: DateTime!
+    updated_at: DateTime!
+    deleted_at: DateTime
+}
+
+extend type Query {
+    departments: [Department!]! @paginate(defaultCount: 15)
+    department(id: ID @eq): Department @find
+}

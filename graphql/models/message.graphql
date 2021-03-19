@@ -1,0 +1,45 @@
+type Message {
+    id: ID!
+    content: String!
+    user_id: ID!
+    user: User! @belongsTo
+    ticket_id: ID!
+    ticket: Ticket! @belongsTo
+    message_type_id: ID!
+    message_type: MessageType @belongsTo
+    source_id: ID!
+    source_created_at: DateTime!
+    is_delivered: Boolean!
+    is_sent: Boolean!
+    created_at: DateTime!
+    updated_at: DateTime!
+    deleted_at: DateTime!
+}
+
+extend type Query {
+    messages: [Message!]! @paginate(defaultCount: 15)
+    message(id: ID @eq): Message @find
+}
+
+input CreateMessageInput {
+    content: String!
+    user_id: ID!
+    ticket_id: ID!
+    message_type_id: ID!
+    is_delivered: Boolean
+    is_sent: Boolean 
+}
+
+input UpdateMessageInput {
+    content: String
+    source_id: String
+    source_created_at: DateTime
+    is_delivered: Boolean
+    is_sent: Boolean 
+}
+
+extend type Mutation {
+    createMessage(payload: CreateMessageInput! @spread): Message @create
+    updateMessage(id: ID!, payload: UpdateMessageInput! @spread): Message @update @broadcast(subscription: "messageUpdated")
+    deleteMessage(id: ID!): Message @delete
+}
