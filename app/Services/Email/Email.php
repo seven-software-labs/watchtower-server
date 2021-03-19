@@ -117,7 +117,7 @@ class Email implements ServiceInterface {
      */
     public function sendMessage(Channel $channel, Message $message): bool 
     {
-        SendMessage::dispatch($channel, $message);
+        SendMessage::dispatchSync($channel, $message);
         return true;
     }
 

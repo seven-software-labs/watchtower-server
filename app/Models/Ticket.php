@@ -39,13 +39,24 @@ class Ticket extends Model
      * The relationships that are automatically loaded.
      */
     protected $with = [
-        'ticketType',
-        'channel',
-        'department',
-        'priority',
-        'user.organization',
-        'status',
+        // ...
     ];
+
+    /**
+     * Get the last replied at attribute.
+     */
+    public function getLastRepliedAtAttribute($value)
+    {
+        return Carbon::parse($value)->diffForHumans();
+    }
+
+    /**
+     * Get the last replied at attribute.
+     */
+    public function setLastRepliedAtAttribute($value)
+    {
+        return Carbon::parse($value)->format('Y-m-d H:i:s');
+    }
     
     /**
      * Get the user that this ticket belongs to.

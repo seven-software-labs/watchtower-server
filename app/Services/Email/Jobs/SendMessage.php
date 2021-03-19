@@ -84,6 +84,16 @@ class SendMessage implements ShouldQueue
         // Get the message.
         $message = $this->message;
 
+        // References
+        $references = Message::where('ticket_id', $this->message->ticket_id)
+            ->latest()
+            ->pluck('source_id');
+
+        // Last Message
+        $lastMessage = Message::where('ticket_id', $this->message->ticket_id)
+            ->latest()
+            ->first();
+
         try {
             //Recipients
             $mail->setFrom($message->user->email, $message->user->name);
@@ -95,9 +105,16 @@ class SendMessage implements ShouldQueue
             $mail->Body    = $message->content;
             $mail->AltBody = $message->content;
 
-            foreach($message->ticket->messages()->where('is_sent', true) as $ticketMessage) {
-                $mail->addCustomHeader('In-Reply-To', $ticketMessage->source_id);
-                $mail->addCustomHeader('References', $ticketMessage->source_id);
+            if ($lastMessage->getKey() != $message->getKey()) {
+                $mail->addCustomHeader('In-Reply-To', $lastMessage->source_id);
+            }
+
+            if(count($references) > 1) {
+                foreach($references as $reference) {
+                    if($reference != "") {
+                        $mail->addCustomHeader('References', $reference);
+                    }
+                }
             }
 
             if($mail->send()) {

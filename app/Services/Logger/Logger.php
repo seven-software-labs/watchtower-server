@@ -2,6 +2,7 @@
 
 namespace App\Services\Logger;
 
+use App\Models\Channel;
 use App\Models\Message;
 use App\Models\Service;
 use App\Services\ServiceInterface;
@@ -113,18 +114,16 @@ class Logger implements ServiceInterface {
      * 
      * This should create a new message for a ticket.
      */
-    public function sendMessage(Message $message): bool 
+    public function sendMessage(Channel $channel, Message $message): bool 
     {
         logger()->log('info', 'Sending Message', [
             'message' => $message,
         ]);
 
-        $message->update([
+        return $message->update([
             'is_sent' => true,
             'is_delivered' => true,
         ]);
-
-        return true;
     }
 
     /**

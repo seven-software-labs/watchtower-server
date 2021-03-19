@@ -13,7 +13,7 @@ class Kernel
             'Email' => '\App\Services\Email\Email',
             // 'Facebook' => '\App\Services\Facebook\Facebook',
             'Logger' => '\App\Services\Logger\Logger',
-            // 'Twitter' => '\App\Services\Twitter\Twitter',
+            'Twitter' => '\App\Services\Twitter\Twitter',
         ];
     }
 }

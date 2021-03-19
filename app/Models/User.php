@@ -39,6 +39,7 @@ class User extends Authenticatable
         'email',
         'password',
         'organization_id',
+        'master_organization_id',
     ];
 
     /**
@@ -68,8 +69,8 @@ class User extends Authenticatable
      * @var array
      */
     protected $with = [
-        'organization',
-        'channels',
+        // 'organization',
+        // 'channels',
     ];    
 
     /**
@@ -105,6 +106,14 @@ class User extends Authenticatable
     public function organization()
     {
         return $this->belongsTo(Organization::class);
+    }
+
+    /**
+     * Get the master organization that belong to the user.
+     */
+    public function masterOrganization()
+    {
+        return $this->belongsTo(Organization::class, 'master_organization_id');
     }
 
     /**

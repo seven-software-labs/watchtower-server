@@ -3,9 +3,12 @@
 namespace App\Http\Controllers\Organization;
 
 use App\Http\Controllers\Controller;
+use App\Http\Resources\TicketResource;
+use App\Http\Requests\Ticket\CreateTicketRequest;
+use App\Http\Requests\Ticket\DeleteTicketRequest;
+use App\Http\Requests\Ticket\UpdateTicketRequest;
 use App\Models\Ticket;
 use App\Models\Organization;
-use App\Http\Resources\TicketResource;
 use Illuminate\Http\Resources\Json\AnonymousResourceCollection;
 use Illuminate\Http\Request;
 
@@ -16,7 +19,14 @@ class TicketController extends Controller
      */
     public function index(Request $request, Organization $organization): AnonymousResourceCollection
     {
+        // 'ticketType',
+        // 'channel',
+        // 'department',
+        // 'priority',
+        // 'user.organization',
+        // 'status',
         $tickets = $organization->tickets()
+            ->with(['channel', 'department', 'priority', 'status', 'user.organization'])
             ->when($request->filled('status_id'), function($query) use($request) {
                 $query->where('status_id', $request->get('status_id'));
             })
@@ -27,20 +37,19 @@ class TicketController extends Controller
                 $query->where('department_id', $request->get('department_id'));
             })        
             ->orderBy('last_replied_at', 'desc')
-            ->paginate(15);
+            ->paginate(50);
 
         return TicketResource::collection($tickets);
     }
 
     /**
      * Store a newly created resource in storage.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @return \Illuminate\Http\Response
      */
-    public function store(Request $request)
+    public function store(CreateTicketRequest $request, Organization $organization): TicketResource
     {
-        //
+        $ticket = Ticket::create($request->validated());
+
+        return new TicketResource($ticket);
     }
 
     /**
@@ -57,24 +66,19 @@ class TicketController extends Controller
 
     /**
      * Update the specified resource in storage.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @param  \App\Models\Ticket  $ticket
-     * @return \Illuminate\Http\Response
      */
-    public function update(Request $request, Ticket $ticket)
+    public function update(UpdateTicketRequest $request, Ticket $ticket): TicketResource
     {
-        //
+        $ticket->update($request->validated());
+
+        return new TicketResource($ticket->fresh());
     }
 
     /**
      * Remove the specified resource from storage.
-     *
-     * @param  \App\Models\Ticket  $ticket
-     * @return \Illuminate\Http\Response
      */
-    public function destroy(Ticket $ticket)
+    public function destroy(DeleteTicketRequest $request, Organization $organization, Ticket $ticket): bool
     {
-        //
+        return $ticket->delete();
     }
 }

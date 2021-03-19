@@ -3,65 +3,58 @@
 namespace App\Http\Controllers\Organization;
 
 use App\Http\Controllers\Controller;
+use App\Http\Resources\UserResource;
+use App\Http\Requests\User\CreateUserRequest;
+use App\Http\Requests\User\DeleteUserRequest;
+use App\Http\Requests\User\UpdateUserRequest;
 use App\Models\User;
 use App\Models\Organization;
-use App\Http\Resources\UserResource;
+use Illuminate\Http\Resources\Json\AnonymousResourceCollection;
 use Illuminate\Http\Request;
 
 class UserController extends Controller
 {
     /**
      * Display a listing of the resource.
-     *
-     * @return \Illuminate\Http\Response
      */
-    public function index(Organization $organization)
+    public function index(Organization $organization): AnonymousResourceCollection
     {
         return UserResource::collection($organization->users()->paginate(15));
     }
 
     /**
      * Store a newly created resource in storage.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @return \Illuminate\Http\Response
      */
-    public function store(Request $request)
+    public function store(CreateUserRequest $request): UserResource
     {
-        //
+        $user = User::create($request->validated());
+
+        return new UserResource($user);
     }
 
     /**
      * Display the specified resource.
-     *
-     * @param  \App\Models\User  $user
-     * @return \Illuminate\Http\Response
      */
-    public function show(Request $request, Organization $organization, User $user)
+    public function show(Request $request, Organization $organization, User $user): UserResource
     {
         return new UserResource($user);
     }
 
     /**
      * Update the specified resource in storage.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @param  \App\Models\User  $user
-     * @return \Illuminate\Http\Response
      */
-    public function update(Request $request, User $user)
+    public function update(UpdateUserRequest $request, Organization $organization, User $user): UserResource
     {
-        //
+        $user->update($request->validated());
+
+        return new UserResource($user->fresh());
     }
 
     /**
      * Remove the specified resource from storage.
-     *
-     * @param  \App\Models\User  $user
-     * @return \Illuminate\Http\Response
      */
-    public function destroy(User $user)
+    public function destroy(DeleteUserRequest $request, Organization $organization, User $user): bool
     {
-        //
+        return $user->delete();
     }
 }

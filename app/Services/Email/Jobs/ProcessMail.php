@@ -73,6 +73,8 @@ class ProcessMail implements ShouldQueue
             $parentMessage = null;
         }
 
+        logger()->info('Parent Message', ['parentMessage' => $parentMessage]);
+
         // If the ticket exists, we can ignore this mail.
         if ($hasMessage) {
             logger()->info("Mail ID {$this->mailId} already has a message.");
@@ -87,13 +89,18 @@ class ProcessMail implements ShouldQueue
             // Lets find or create the user that this ticket is going to belong to.
             $user = User::firstOrCreate([
                 'email' => $mail->fromAddress,
+                'master_organization_id' => $this->channel->organization_id,
             ], [
-                'organization_id' => $this->channel->organization_id,
                 'name' => $mail->fromName ?? $mail->fromAddress,
                 'password' => Hash::make(Str::random(40)),
+                'organization_id' => $this->channel->organization_id,
             ]);
 
+            logger()->info("Found User", ['user' => $user]);
+
             $user->channels()->syncWithoutDetaching($this->channel->getKey());
+
+            logger()->info("Checkup, after syncing.");
 
             // Lets create the ticket and the message.
             if($parentMessage) {
@@ -110,15 +117,19 @@ class ProcessMail implements ShouldQueue
                     'priority_id' => $this->channel->organization->default_priority->getKey(),
                     'channel_id' => $this->channel->getKey(),
                 ]);
-
-                $ticket->messages()->create([
-                    'content' => $mail->textHtml,
-                    'message_type_id' => 1,
-                    'user_id' => $user->getKey(),
-                    'source_id' => $message_id,
-                    'source_created_at' => Carbon::parse($mail->headers->date)->format('Y-m-d H:i:s'),
-                ]);
             }
+
+            logger()->info("Found Ticket", ['ticket' => $ticket]);
+
+            $message = $ticket->messages()->create([
+                'content' => $mail->textPlain,
+                'message_type_id' => 1,
+                'user_id' => $user->getKey(),
+                'source_id' => $message_id,
+                'source_created_at' => Carbon::parse($mail->headers->date)->format('Y-m-d H:i:s'),
+            ]);
+
+            logger()->info("New Message", ['message' => $message]);
             
             DB::commit();
         } catch (\Exception $e) {

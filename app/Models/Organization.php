@@ -108,7 +108,7 @@ class Organization extends Model
      */
     public function users()
     {
-        return $this->hasMany(User::class);
+        return $this->hasMany(User::class, 'master_organization_id');
     }    
 
     /**
@@ -186,9 +186,10 @@ class Organization extends Model
      */
     public function purgeOrganization()
     {
-        $this->messages()->truncate();
-        $this->tickets()->query()->delete();
-        $this->organizations()->where('id', '!=', 1)->delete();
-        $this->users()->where('id', '!=', 1)->delete();
+        // Delete Messages
+        $this->messages()->where('messages.id', '!=', 0)->delete();
+
+        // Delete Tickets
+        $this->tickets()->where('tickets.id', '!=', 0)->delete();
     }
 }

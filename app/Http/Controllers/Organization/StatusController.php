@@ -3,12 +3,12 @@
 namespace App\Http\Controllers\Organization;
 
 use App\Http\Controllers\Controller;
-use App\Models\Status;
-use App\Models\Organization;
 use App\Http\Resources\StatusResource;
 use App\Http\Requests\Status\CreateStatusRequest;
 use App\Http\Requests\Status\DeleteStatusRequest;
 use App\Http\Requests\Status\UpdateStatusRequest;
+use App\Models\Status;
+use App\Models\Organization;
 use Illuminate\Http\Resources\Json\AnonymousResourceCollection;
 use Illuminate\Http\Request;
 

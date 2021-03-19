@@ -3,13 +3,13 @@
 namespace App\Http\Controllers\Organization;
 
 use App\Http\Controllers\Controller;
-use App\Models\Channel;
-use App\Models\Message;
-use App\Models\Organization;
 use App\Http\Resources\ChannelResource;
 use App\Http\Requests\Channel\CreateChannelRequest;
 use App\Http\Requests\Channel\DeleteChannelRequest;
 use App\Http\Requests\Channel\UpdateChannelRequest;
+use App\Models\Channel;
+use App\Models\Message;
+use App\Models\Organization;
 use Illuminate\Http\Resources\Json\AnonymousResourceCollection;
 use Illuminate\Http\Request;
 

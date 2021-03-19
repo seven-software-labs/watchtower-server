@@ -3,6 +3,8 @@
 namespace App\Events\Message;
 
 use App\Models\Message;
+use App\Models\Ticket;
+use App\Http\Resources\MessageResource;
 use Illuminate\Broadcasting\InteractsWithSockets;
 use Illuminate\Broadcasting\PrivateChannel;
 use Illuminate\Contracts\Broadcasting\ShouldBroadcast;
@@ -14,9 +16,12 @@ class MessageCreated implements ShouldBroadcast
     use Dispatchable, InteractsWithSockets, SerializesModels;
 
     /**
-     * The message that is firing with the event.
-     * 
-     * @var \App\Models\Message
+     * The ticket class that is firing with the event.
+     */
+    private Ticket $ticket;
+
+    /**
+     * The message resource that is firing with the event.
      */
     public $message;
 
@@ -28,15 +33,15 @@ class MessageCreated implements ShouldBroadcast
     public function __construct(Message $message)
     {
         // Get the ticket for the message.
-        $ticket = $message->ticket;
+        $this->ticket = $message->ticket;
 
         // Update the message's ticket to reflect the last_reply column appropriately.
-        $ticket->update([
+        $this->ticket->update([
             'last_replied_at' => $message->source_created_at,
         ]);
 
         // Set the data.
-        $this->message = $message;
+        $this->message = new MessageResource($message);
     }
 
     /**
@@ -47,8 +52,8 @@ class MessageCreated implements ShouldBroadcast
     public function broadcastOn()
     {
         return [
-            new PrivateChannel("organization-{$this->message->ticket->organization_id}-ticket-{$this->message->ticket->getKey()}-channel"),
-            new PrivateChannel("organization-{$this->message->ticket->organization_id}-ticket-channel"),
+            new PrivateChannel("organization-{$this->ticket->organization_id}-ticket-{$this->ticket->getKey()}-channel"),
+            new PrivateChannel("organization-{$this->ticket->organization_id}-ticket-channel"),
         ];
     }
 }
