@@ -41,14 +41,12 @@ class ProcessMailbox implements ShouldQueue
         $settings = $this->channel->settings;
 
         // Build the server string.
-        $server = $settings->get('email_server');
-        $port = $settings->get('port');
-        $service = $settings->get('service');
-        $folder = 'INBOX';
+        $server = $settings->get('imap_email_server');
+        $port = $settings->get('imap_port');
 
         // Build the mailbox.
         $mailbox = new \PhpImap\Mailbox(
-            "{{$server}:{$port}/{$service}/ssl}$folder", 
+            "{{$server}:{$port}/imap/ssl}INBOX",
             $settings->get('email'), 
             $settings->get('password'),
             false,

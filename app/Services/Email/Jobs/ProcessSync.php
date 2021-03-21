@@ -39,7 +39,12 @@ class ProcessSync implements ShouldQueue
             })->get();
 
         $organizations->each(function($organization) use($service) {
-            $organization->channels()->where('service_id', $service->getKey())->get()->each(function($channel) {
+            $organizationChannels = $organization->channels()
+                ->where('service_id', $service->getKey())
+                ->where('is_active', true)
+                ->get();
+
+            $organizationChannels->each(function($channel) {
                 logger()->info('Channel: ' . $channel->name);
                 ProcessMailbox::dispatch($channel);
             });

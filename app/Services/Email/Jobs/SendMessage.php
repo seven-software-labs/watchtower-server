@@ -59,14 +59,14 @@ class SendMessage implements ShouldQueue
         $mail = new PHPMailer();
 
         // Configure send settings.
-        $mail->SMTPDebug = SMTP::DEBUG_SERVER;                      //Enable verbose debug output
-        $mail->isSMTP();                                            //Send using SMTP
-        $mail->Host       = 'smtp.gmail.com'; // @todo Replace This
-        $mail->SMTPAuth   = true;                                   //Enable SMTP authentication
-        $mail->Username   = $settings->get('email');               //SMTP username
+        $mail->SMTPDebug = SMTP::DEBUG_SERVER;
+        $mail->isSMTP();
+        $mail->SMTPAuth   = true;
+        $mail->SMTPSecure = PHPMailer::ENCRYPTION_STARTTLS;
+        $mail->Host       = $settings->get('smtp_email_server');
+        $mail->Port       = $settings->get('smtp_port');
+        $mail->Username   = $settings->get('email');
         $mail->Password   = $settings->get('password');
-        $mail->SMTPSecure = PHPMailer::ENCRYPTION_STARTTLS;         //Enable TLS encryption; `PHPMailer::ENCRYPTION_SMTPS` encouraged
-        $mail->Port       = 587; // @todo Replace This
         
         return $mail;
     }
