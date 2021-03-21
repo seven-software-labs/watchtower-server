@@ -1,7 +1,6 @@
 <?php
 
 use Illuminate\Support\Facades\Broadcast;
-use Illuminate\Support\Str;
 
 /*
 |--------------------------------------------------------------------------
@@ -13,6 +12,8 @@ use Illuminate\Support\Str;
 | used to check if an authenticated user can listen to the channel.
 |
 */
+
+Broadcast::routes(['middleware' => ['api']]);
 
 Broadcast::channel('ticket-channel', function() {
     return true;
