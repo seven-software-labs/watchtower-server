@@ -13,8 +13,6 @@ use Illuminate\Support\Facades\Broadcast;
 |
 */
 
-Broadcast::routes(['middleware' => ['api']]);
-
 Broadcast::channel('ticket-channel', function() {
     return true;
 });
