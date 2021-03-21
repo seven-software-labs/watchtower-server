@@ -13,7 +13,8 @@ class MeController extends Controller
      */
     public function index(): UserResource
     {
-        $user = User::with(['organization'])->find(auth()->user()->id);
+        $user = User::with(['organization', 'masterOrganization'])
+            ->find(auth()->user()->id);
 
         return new UserResource($user);
     }

@@ -2,31 +2,47 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Message;
-use App\Models\Ticket;
-use Illuminate\Http\Request;
-use App\Http\Requests\Message\CreateMessageRequest;
+use App\Http\Controllers\Controller;
 use App\Http\Resources\MessageResource;
+use App\Http\Requests\Message\CreateMessageRequest;
+use App\Http\Requests\Message\DeleteMessageRequest;
+use App\Http\Requests\Message\UpdateMessageRequest;
+use App\Models\Message;
+use App\Models\Organization;
+use App\Models\Ticket;
+use Illuminate\Http\Resources\Json\AnonymousResourceCollection;
+use Illuminate\Http\Request;
 
 class MessageController extends Controller
 {
     /**
-     * Display a listing of the resource.
-     *
-     * @return \Illuminate\Http\Response
+     * The organization that holds the resources.
      */
-    public function index()
+    private Organization $organization;
+
+    /**
+     * Create a new ChannelController instance.
+     */
+    public function __construct()
     {
-        //
+        $this->middleware(function ($request, $next) {
+            $this->organization = auth()->user()->masterOrganization;
+            return $next($request);
+        });
+    }
+    
+    /**
+     * Display a listing of the resource.
+     */
+    public function index(Request $request): AnonymousResourceCollection
+    {
+        return MessageResource::collection($this->organization->messages()->paginate(15));
     }
 
     /**
      * Store a newly created resource in storage.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @return \Illuminate\Http\Response
      */
-    public function store(CreateMessageRequest $request)
+    public function store(CreateMessageRequest $request): MessageResource
     {
         // Find the ticket.
         $ticket = Ticket::findOrFail($request->get('ticket_id'));
@@ -40,8 +56,8 @@ class MessageController extends Controller
             'source_created_at' => now(),
         ]);
 
-        if($request->get('message_type_id') == 1) {
-            $ticket->channel->sendMessage($message);
+        if($request->get('message_type_id') == \App\Models\MessageType::REPLY) {
+            $ticket->channel->service->sendMessage($ticket->channel, $message);
         }
 
         return new MessageResource($message);
@@ -49,25 +65,20 @@ class MessageController extends Controller
 
     /**
      * Display the specified resource.
-     *
-     * @param  \App\Models\Message  $message
-     * @return \Illuminate\Http\Response
      */
-    public function show(Message $message)
+    public function show(Message $message): MessageResource
     {
-        //
+        return new MessageResource($message);
     }
 
     /**
      * Update the specified resource in storage.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @param  \App\Models\Message  $message
-     * @return \Illuminate\Http\Response
      */
-    public function update(Request $request, Message $message)
+    public function update(UpdateMessageRequest $request, Message $message): MessageResource
     {
-        //
+        $message->update($request->validated());
+
+        return new MessageResource($message);
     }
 
     /**
@@ -76,8 +87,8 @@ class MessageController extends Controller
      * @param  \App\Models\Message  $message
      * @return \Illuminate\Http\Response
      */
-    public function destroy(Message $message)
+    public function destroy(DeleteMessageRequest $request, Message $message): bool
     {
-        //
+        return $message->delete();
     }
 }
