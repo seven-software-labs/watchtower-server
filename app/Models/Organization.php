@@ -5,10 +5,10 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
-
+use Laravel\Paddle\Billable;
 class Organization extends Model
 {
-    use HasFactory, SoftDeletes;
+    use Billable, HasFactory, SoftDeletes;
 
     /**
      * The table associated with the model.
@@ -36,8 +36,7 @@ class Organization extends Model
      */
     public function channels()
     {
-        return $this->hasManyThrough(Channel::class, ChannelOrganization::class, 'channel_id', 'id')
-            ->with('channel_organization');
+        return $this->hasMany(Channel::class);
     }    
 
     /**
@@ -54,6 +53,14 @@ class Organization extends Model
     public function departments()
     {
         return $this->hasMany(Department::class);
+    }   
+
+    /**
+     * Get the messages that belong to the organization through tickets.
+     */
+    public function messages()
+    {
+        return $this->hasManyThrough(Message::class, Ticket::class);
     }
 
     /**
@@ -65,11 +72,27 @@ class Organization extends Model
     }
 
     /**
+     * Get the default priority for the organization.
+     */
+    public function getDefaultPriorityAttribute()
+    {
+        return $this->priorities()->where('is_default', true)->first();
+    }
+
+    /**
      * Get the statuses that belong to the organization.
      */
     public function statuses()
     {
         return $this->hasMany(Status::class);
+    }
+
+    /**
+     * Get the default status for the organization.
+     */
+    public function getDefaultStatusAttribute()
+    {
+        return $this->statuses()->where('is_default', true)->first();
     }
 
     /**
@@ -85,7 +108,88 @@ class Organization extends Model
      */
     public function users()
     {
-        return $this->belongsToMany(User::class)
-            ->using(Pivot\OrganizationUser::class);
+        return $this->hasMany(User::class, 'master_organization_id');
     }    
+
+    /**
+     * Perform the initial setup for an organization.
+     */
+    public function setupOrganization()
+    {
+        // Create Departments
+        $departments = [
+            [
+                'name' => 'Client Success',
+                'color' => 'gray',
+                'is_default' => true,
+            ],
+        ];
+
+        foreach($departments as $department) {
+            $this->departments()->create($department);
+        }
+
+        // Create Priorities
+        $priorities = [
+            [
+                'name' => 'Low',
+                'color' => 'gray',
+                'is_default' => false,
+            ],
+            [
+                'name' => 'Medium',
+                'color' => 'blue',
+                'is_default' => true,
+            ],
+            [
+                'name' => 'High',
+                'color' => 'yellow',
+                'is_default' => false,
+            ],
+            [
+                'name' => 'Critical',
+                'color' => 'red',
+                'is_default' => false,
+            ],
+        ];
+
+        foreach ($priorities as $priority) {
+            $this->priorities()->create($priority);
+        }
+
+        // Create Statuses
+        $statuses = [
+            [
+                'name' => 'Open',
+                'color' => 'green',
+                'is_default' => true,
+            ],
+            [
+                'name' => 'Pending',
+                'color' => 'yellow',
+                'is_default' => false,
+            ],
+            [
+                'name' => 'Closed',
+                'color' => 'gray',
+                'is_default' => false,
+            ],
+        ];
+
+        foreach($statuses as $status) {
+            $this->statuses()->create($status);
+        }        
+    }
+
+    /**
+     * Purge the organization of data.
+     */
+    public function purgeOrganization()
+    {
+        // Delete Messages
+        $this->messages()->where('messages.id', '!=', 0)->delete();
+
+        // Delete Tickets
+        $this->tickets()->where('tickets.id', '!=', 0)->delete();
+    }
 }

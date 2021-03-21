@@ -43,29 +43,6 @@ class CreateStatusesTable extends Migration
      */
     public function seed()
     {
-        $statuses = collect([
-            [
-                'name' => 'Open',
-                'color' => 'green',
-                'organization_id' => 1,
-                'is_default' => true,
-            ],
-            [
-                'name' => 'Pending',
-                'color' => 'yellow',
-                'organization_id' => 1,
-                'is_default' => false,
-            ],
-            [
-                'name' => 'Closed',
-                'color' => 'gray',
-                'organization_id' => 1,
-                'is_default' => false,
-            ],
-        ]);
-
-        $statuses->each(function($status) {
-            Status::create($status);
-        });
+        // ...
     }
 }

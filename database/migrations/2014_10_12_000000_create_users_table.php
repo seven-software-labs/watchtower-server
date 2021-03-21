@@ -18,11 +18,13 @@ class CreateUsersTable extends Migration
         Schema::create('users', function (Blueprint $table) {
             $table->id();
             $table->string('name');
-            $table->string('email')->unique();
+            $table->string('email')->nullable();
             $table->timestamp('email_verified_at')->nullable();
             $table->string('password');
             $table->rememberToken();
             $table->foreignId('current_team_id')->nullable();
+            $table->foreignId('organization_id')->nullable();
+            $table->foreignId('master_organization_id')->nullable();
             $table->text('profile_photo_path')->nullable();
             $table->softDeletes();
             $table->timestamps();
@@ -51,12 +53,7 @@ class CreateUsersTable extends Migration
                 'name' => 'Jonathan Tordesillas',
                 'email' => 'yamato.takato@gmail.com',
                 'password' => Hash::make('password'),
-                'email_verified_at' => now(),
-            ],
-            [
-                'name' => 'Mark Cuban',
-                'email' => 'mark.cuban@dallasmavs.com',
-                'password' => Hash::make('password'),
+                'organization_id' => 1,
                 'email_verified_at' => now(),
             ],
         ]);

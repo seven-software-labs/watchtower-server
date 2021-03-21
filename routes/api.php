@@ -38,6 +38,7 @@ Route::group(['middleware' => ['auth:sanctum']], function() {
         'messages' => \App\Http\Controllers\MessageController::class,
         'priorities' => \App\Http\Controllers\PriorityController::class,
         'statuses' => \App\Http\Controllers\StatusController::class,
+        'services' => \App\Http\Controllers\ServiceController::class,
         'tickets' => \App\Http\Controllers\TicketController::class,
         'users' => \App\Http\Controllers\UserController::class,
     ]);
@@ -47,7 +48,6 @@ Route::group(['middleware' => ['auth:sanctum']], function() {
         Route::apiResources([
             'organizations' => \App\Http\Controllers\OrganizationController::class,
             'organizations.channels' => \App\Http\Controllers\Organization\ChannelController::class,
-            'organizations.channel-organizations' => \App\Http\Controllers\Organization\ChannelOrganizationController::class,
             'organizations.departments' => \App\Http\Controllers\Organization\DepartmentController::class,
             'organizations.messages' => \App\Http\Controllers\Organization\MessageController::class,
             'organizations.child-organizations' => \App\Http\Controllers\Organization\OrganizationController::class,

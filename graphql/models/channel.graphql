@@ -1,0 +1,12 @@
+type Channel {
+    id: ID!
+    name: String!
+    users: [User!]! @paginate(defaultCount: 15)
+    created_at: DateTime!
+    updated_at: DateTime!
+}
+
+extend type Query {
+    channels: [Channel!]! @paginate(defaultCount: 15)
+    channel(id: ID @eq): Channel @find
+}

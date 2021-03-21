@@ -3,13 +3,13 @@
 namespace App\Http\Controllers\Organization;
 
 use App\Http\Controllers\Controller;
-use App\Models\Message;
-use App\Models\Organization;
-use App\Models\Ticket;
 use App\Http\Resources\MessageResource;
 use App\Http\Requests\Message\CreateMessageRequest;
 use App\Http\Requests\Message\DeleteMessageRequest;
 use App\Http\Requests\Message\UpdateMessageRequest;
+use App\Models\Message;
+use App\Models\Organization;
+use App\Models\Ticket;
 use Illuminate\Http\Resources\Json\AnonymousResourceCollection;
 
 class MessageController extends Controller
@@ -40,7 +40,7 @@ class MessageController extends Controller
         ]);
 
         if($request->get('message_type_id') == \App\Models\MessageType::REPLY) {
-            $ticket->channel->sendMessage($ticket->channelOrganization, $message);
+            $ticket->channel->service->sendMessage($ticket->channel, $message);
         }
 
         return new MessageResource($message);

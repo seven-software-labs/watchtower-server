@@ -3,12 +3,12 @@
 namespace App\Http\Controllers\Organization;
 
 use App\Http\Controllers\Controller;
-use App\Models\Priority;
-use App\Models\Organization;
 use App\Http\Resources\PriorityResource;
 use App\Http\Requests\Priority\CreatePriorityRequest;
 use App\Http\Requests\Priority\DeletePriorityRequest;
 use App\Http\Requests\Priority\UpdatePriorityRequest;
+use App\Models\Priority;
+use App\Models\Organization;
 use Illuminate\Http\Resources\Json\AnonymousResourceCollection;
 use Illuminate\Http\Request;
 

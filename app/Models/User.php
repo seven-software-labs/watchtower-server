@@ -38,6 +38,8 @@ class User extends Authenticatable
         'name',
         'email',
         'password',
+        'organization_id',
+        'master_organization_id',
     ];
 
     /**
@@ -62,42 +64,56 @@ class User extends Authenticatable
     ];
 
     /**
+     * The relationships that are automatically loaded.
+     * 
+     * @var array
+     */
+    protected $with = [
+        // 'organization',
+        // 'channels',
+    ];    
+
+    /**
      * The accessors to append to the model's array form.
      *
      * @var array
      */
     protected $appends = [
         'profile_photo_url',
-        'primary_organization',
         'is_customer',
     ];
 
     /**
-     * Get the organizations that belong to the user.
+     * Get the organization that belong to the user.
      */
     public function getIsCustomerAttribute()
     {
         return $this->hasRole('customer') || (!$this->hasRole(['administrator', 'operator']));
     }
-
+    
     /**
-     * Get the organizations that belong to the user.
+     * Get the channels that belong to the user.
      */
-    public function organizations()
+    public function channels()
     {
-        return $this->belongsToMany(Organization::class)
-            ->using(Pivot\OrganizationUser::class)
-            ->withPivot('is_default');
+        return $this->belongsToMany(Channel::class)
+            ->using(Pivot\ChannelUser::class);
     }
 
     /**
-     * Get the primary organization of the user.
+     * Get the organization that belong to the user.
      */
-    public function getPrimaryOrganizationAttribute()
+    public function organization()
     {
-        return $this->organizations()
-            ->where('is_default', true)
-            ->first();
+        return $this->belongsTo(Organization::class);
+    }
+
+    /**
+     * Get the master organization that belong to the user.
+     */
+    public function masterOrganization()
+    {
+        return $this->belongsTo(Organization::class, 'master_organization_id');
     }
 
     /**

@@ -3,6 +3,7 @@
 namespace App\Observers;
 
 use App\Models\Message;
+use App\Events\Message\MessageCreated;
 
 class MessageObserver
 {
@@ -14,11 +15,7 @@ class MessageObserver
      */
     public function created(Message $message)
     {
-        // Lets update the message's ticket to reflect
-        // the last_reply column appropriately.
-        $ticket = $message->ticket;
-        $ticket->last_replied_at = $message->source_created_at;
-        $ticket->save();
+        MessageCreated::dispatch($message);
     }
 
     /**

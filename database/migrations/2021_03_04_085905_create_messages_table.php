@@ -1,6 +1,5 @@
 <?php
 
-use App\Models\Message;
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
@@ -20,6 +19,7 @@ class CreateMessagesTable extends Migration
             $table->foreignId('message_type_id')->constrained('message_types');
             $table->foreignId('ticket_id')->constrained('tickets');
             $table->foreignId('user_id')->constrained('users');
+            $table->foreignId('target_user_id')->nullable();
             $table->string('source_id')->nullable();
             $table->dateTime('source_created_at')->nullable();
             $table->boolean('is_sent')->default(false);

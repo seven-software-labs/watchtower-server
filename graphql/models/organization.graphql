@@ -1,0 +1,16 @@
+type Organization {
+    id: ID!
+    name: String!
+    tickets: [Ticket!]! @hasMany(type: PAGINATOR, defaultCount: 15)
+    users: [User!]! @hasMany(type: PAGINATOR, defaultCount: 15)
+    departments: [Department!] @hasMany(type: PAGINATOR, defaultCount: 15)
+    priorities: [Priority!]! @hasMany(type: PAGINATOR, defaultCount: 15)
+    statuses: [Status!]! @hasMany(type: PAGINATOR, defaultCount: 15)
+    created_at: DateTime!
+    updated_at: DateTime!
+}
+
+extend type Query {
+    organizations: [Organization!]! @paginate(defaultCount: 15)
+    organization(id: ID @eq): Organization @find
+}

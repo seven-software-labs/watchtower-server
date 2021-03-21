@@ -24,7 +24,7 @@ class Kernel extends ConsoleKernel
      */
     protected function schedule(Schedule $schedule)
     {
-        $schedule->command('channels:sync')
+        $schedule->command('services:sync')
             ->withoutOverlapping(5)
             ->everyFiveMinutes();
     }

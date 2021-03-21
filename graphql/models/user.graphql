@@ -1,0 +1,22 @@
+type User {
+    id: ID!
+    name: String!
+    channels: [Channel!]! @paginate(defaultCount: 15)
+    current_team_id: ID
+    email: String!
+    email_verified_at: DateTime
+    profile_photo_path: String
+    profile_photo_url: String!
+    is_customer: Boolean!
+    organization_id: ID!
+    organization: Organization! @belongsTo
+    # roles: [Role!]!
+    created_at: DateTime!
+    updated_at: DateTime!
+    deleted_at: DateTime
+}
+
+extend type Query {
+    users: [User!]! @paginate(defaultCount: 15)
+    user(id: ID @eq): User @find
+}

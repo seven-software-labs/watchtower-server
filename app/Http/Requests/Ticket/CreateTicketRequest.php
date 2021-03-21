@@ -24,7 +24,10 @@ class CreateTicketRequest extends FormRequest
     public function rules()
     {
         return [
-            //
+            'subject' => ['required', 'string', 'min:1'],
+            'department_id' => ['required', 'exists:departments,id'],
+            'priority_id' => ['required', 'exists:priorities,id'],
+            'status_id' => ['required', 'exists:statuses,id'],
         ];
     }
 }

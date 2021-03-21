@@ -16,12 +16,10 @@ class TicketCreated implements ShouldBroadcast
     /**
      * The ticket that was created.
      */
-    public $ticket;
+    public Ticket $ticket;
 
     /**
      * Create a new event instance.
-     *
-     * @return void
      */
     public function __construct(Ticket $ticket)
     {
@@ -30,11 +28,9 @@ class TicketCreated implements ShouldBroadcast
 
     /**
      * Get the channels the event should broadcast on.
-     *
-     * @return \Illuminate\Broadcasting\Channel|array
      */
-    public function broadcastOn()
+    public function broadcastOn(): PrivateChannel
     {
-        return new PrivateChannel('ticket-channel');
+        return new PrivateChannel("organization-{$this->ticket->organization_id}-ticket-channel");
     }
 }

@@ -3,18 +3,20 @@
 namespace App\Http\Controllers\Organization;
 
 use App\Http\Controllers\Controller;
-use App\Models\Organization;
 use App\Http\Resources\OrganizationResource;
+use App\Http\Requests\Organization\CreateOrganizationRequest;
+use App\Http\Requests\Organization\DeleteOrganizationRequest;
+use App\Http\Requests\Organization\UpdateOrganizationRequest;
+use App\Models\Organization;
+use Illuminate\Http\Resources\Json\AnonymousResourceCollection;
 use Illuminate\Http\Request;
 
 class OrganizationController extends Controller
 {
     /**
      * Display a listing of the resource.
-     *
-     * @return \Illuminate\Http\Response
      */
-    public function index(Organization $organization)
+    public function index(Organization $organization): AnonymousResourceCollection
     {
         $organizations = Organization::query()
             ->where('parent_organization_id', $organization->getKey())
@@ -27,46 +29,37 @@ class OrganizationController extends Controller
 
     /**
      * Store a newly created resource in storage.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @return \Illuminate\Http\Response
      */
-    public function store(Request $request)
+    public function store(CreateOrganizationRequest $request, Organization $organization): OrganizationResource
     {
-        //
+        $organization->update($request->validated());
+
+        return new OrganizationResource($organization->fresh());
     }
 
     /**
      * Display the specified resource.
-     *
-     * @param  \App\Models\Organization  $organization
-     * @return \Illuminate\Http\Response
      */
-    public function show(Organization $organization)
+    public function show(Request $request, Organization $organization): OrganizationResource
     {
         return new OrganizationResource($organization);
     }
 
     /**
      * Update the specified resource in storage.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @param  \App\Models\Organization  $organization
-     * @return \Illuminate\Http\Response
      */
-    public function update(Request $request, Organization $organization)
+    public function update(UpdateOrganizationRequest $request, Organization $organization): OrganizationResource
     {
-        //
+        $organization->update($request->validated());
+
+        return new OrganizationResource($organization->fresh());
     }
 
     /**
      * Remove the specified resource from storage.
-     *
-     * @param  \App\Models\Organization  $organization
-     * @return \Illuminate\Http\Response
      */
-    public function destroy(Organization $organization)
+    public function destroy(DeleteOrganizationRequest $request, Organization $organization): bool
     {
-        //
+        return $organization->delete();
     }
 }

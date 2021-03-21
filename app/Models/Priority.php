@@ -27,6 +27,7 @@ class Priority extends Model
         'color',
         'organization_id',
         'is_default',
+        'is_removeable',
     ];
 
     /**
@@ -43,7 +44,7 @@ class Priority extends Model
     }
 
     /**
-     * Get the organizations that belong to the priority.
+     * Get the organization that belongs to the priority.
      */
     public function organization()
     {

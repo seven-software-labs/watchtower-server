@@ -1,0 +1,45 @@
+type Ticket {
+    id: ID!
+    subject: String!
+    messages: [Message!]! @hasMany(type: PAGINATOR, defaultCount: 15)
+    channel_id: ID!
+    channel: Channel!
+    department_id: ID!
+    department: Department! @belongsTo
+    status_id: ID!
+    status: Status! @belongsTo
+    priority_id: ID!
+    priority: Priority! @belongsTo
+    user_id: ID!
+    user: User! @belongsTo
+    last_replied_at: DateTime
+    created_at: DateTime!
+    updated_at: DateTime!
+}
+
+extend type Query {
+    tickets: [Ticket!]! @paginate(defaultCount: 15)
+    ticket(id: ID @eq): Ticket @find
+}
+
+input CreateTicketInput {
+    subject: String!
+    channel_id: ID!
+    department_id: ID!
+    status_id: ID!
+    priority_id: ID!
+    user_id: ID!
+}
+
+input UpdateTicketInput {
+    subject: String
+    department_id: ID
+    status_id: ID
+    priority_id: ID
+}
+
+extend type Mutation {
+    createTicket(payload: CreateTicketInput! @spread): Ticket @create
+    updateTicket(id: ID!, payload: UpdateTicketInput! @spread): Ticket @update @broadcast(subscription: "ticketUpdated")
+    deleteTicket(id: ID!): Ticket @delete
+}

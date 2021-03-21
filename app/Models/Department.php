@@ -27,20 +27,16 @@ class Department extends Model
         'color',
         'organization_id',
         'is_default',
+        'is_removeable',
     ];
 
     /**
      * The relationship counts that are automatically appended.
      */
-    protected $withCount = ['tickets'];
-    
-    /**
-     * Get the tickets that belong to this status.
-     */
-    public function tickets()
-    {
-        return $this->hasMany(Ticket::class);
-    }
+    protected $withCount = [
+        'channels',
+        'tickets', 
+    ];
 
     /**
      * Get the organization that belong to the department.
@@ -48,5 +44,21 @@ class Department extends Model
     public function organization()
     {
         return $this->belongsTo(Organization::class);
+    }
+    
+    /**
+     * Get the tickets that belong to this department.
+     */
+    public function tickets()
+    {
+        return $this->hasMany(Ticket::class);
+    }
+    
+    /**
+     * Get the channels that belong to this department.
+     */
+    public function channels()
+    {
+        return $this->hasMany(Channel::class);
     }
 }
