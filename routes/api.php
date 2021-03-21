@@ -29,8 +29,14 @@ Route::group(['middleware' => ['auth:api']], function() {
     });
 
     // Me
-    Route::get('me', [\App\Http\Controllers\MeController::class, 'index'])
+    Route::get('/me', [\App\Http\Controllers\MeController::class, 'index'])
         ->name('me');
+
+    Route::match(['PATCH', 'PUT'], '/me/profile/update', [\App\Http\Controllers\MeController::class, 'updateProfile'])
+        ->name('me.profile.update');
+
+    Route::match(['PATCH', 'PUT'], '/me/password/update', [\App\Http\Controllers\MeController::class, 'updatePassword'])
+        ->name('me.password.update');
 
     // General Resources
     Route::apiResources([
