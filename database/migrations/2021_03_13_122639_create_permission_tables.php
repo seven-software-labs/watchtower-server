@@ -1,6 +1,5 @@
 <?php
 
-use App\Models\User;
 use Illuminate\Support\Facades\Schema;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Database\Migrations\Migration;
@@ -124,7 +123,5 @@ class CreatePermissionTables extends Migration
         $admin = Role::create(['name' => 'administrator']);
         $operator = Role::create(['name' => 'operator']);
         $customer = Role::create(['name' => 'customer']);
-
-        User::find(1)->assignRole(['administrator', 'operator']);
     }
 }
