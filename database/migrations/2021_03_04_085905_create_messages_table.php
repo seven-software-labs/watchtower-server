@@ -15,11 +15,12 @@ class CreateMessagesTable extends Migration
     {
         Schema::create('messages', function (Blueprint $table) {
             $table->id();
+            $table->string('subject');
             $table->longtext('content');
             $table->foreignId('message_type_id')->constrained('message_types');
             $table->foreignId('ticket_id')->constrained('tickets');
-            $table->foreignId('user_id')->constrained('users');
-            $table->foreignId('target_user_id')->nullable();
+            $table->foreignId('sender_user_id')->nullable()->constrained('users');
+            $table->foreignId('recipient_user_id')->nullable()->constrained('users');
             $table->string('source_id')->nullable();
             $table->dateTime('source_created_at')->nullable();
             $table->boolean('is_sent')->default(false);

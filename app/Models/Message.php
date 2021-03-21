@@ -67,10 +67,18 @@ class Message extends Model
     }
     
     /**
-     * Get the user that this ticket belongs to.
+     * Get the sender that this message belongs to.
      */
-    public function user()
+    public function sender()
     {
-        return $this->belongsTo(User::class);
+        return $this->belongsTo(User::class, 'sender_user_id');
+    }
+
+    /**
+     * Get the recipient that this message blongs to.
+     */
+    public function recipient()
+    {
+        return $this->belongsTo(User::class, 'recipient_user_id');
     }
 }
