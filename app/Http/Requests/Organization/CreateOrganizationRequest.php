@@ -13,7 +13,19 @@ class CreateOrganizationRequest extends FormRequest
      */
     public function authorize()
     {
-        return false;
+        return true;
+    }
+
+    /**
+     * Prepare the data for validation.
+     *
+     * @return void
+     */
+    protected function prepareForValidation()
+    {
+        $this->merge([
+            'master_organization_id' => auth()->user()->master_organization_id,
+        ]);
     }
 
     /**
@@ -25,6 +37,7 @@ class CreateOrganizationRequest extends FormRequest
     {
         return [
             'name' => ['required'],
+            'master_organization_id' => ['required', 'exists:organizations,id'],
         ];
     }
 }

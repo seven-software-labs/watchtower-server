@@ -35,9 +35,12 @@ class OrganizationController extends Controller
      */
     public function index(): AnonymousResourceCollection
     {
-        $organizations = $this->organization->organizations()->paginate(15);
+        $ids = array_merge([$this->organization->getKey()], $this->organization->organizations->toArray());
 
-        return OrganizationResource::collection(\App\Models\Organization::paginate(15));
+        $organizations = Organization::whereIn('id', $ids)
+            ->paginate(15);
+
+        return OrganizationResource::collection($organizations);
     }
 
     /**
@@ -45,34 +48,34 @@ class OrganizationController extends Controller
      */
     public function store(CreateOrganizationRequest $request): OrganizationResource
     {
-        $this->organization->update($request->validated());
+        $organization = $this->organization->organizations()->create($request->validated());
 
-        return new OrganizationResource($this->organization->fresh());
+        return new OrganizationResource($organization->fresh());
     }
 
     /**
      * Display the specified resource.
      */
-    public function show(Request $request): OrganizationResource
+    public function show(Request $request, Organization $organization): OrganizationResource
     {
-        return new OrganizationResource($this->organization);
+        return new OrganizationResource($organization);
     }
 
     /**
      * Update the specified resource in storage.
      */
-    public function update(UpdateOrganizationRequest $request): OrganizationResource
+    public function update(UpdateOrganizationRequest $request, Organization $organization): OrganizationResource
     {
-        $this->organization->update($request->validated());
+        $organization->update($request->validated());
 
-        return new OrganizationResource($this->organization->fresh());
+        return new OrganizationResource($organization->fresh());
     }
 
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(DeleteOrganizationRequest $request): bool
+    public function destroy(DeleteOrganizationRequest $request, Organization $organization): bool
     {
-        return $this->organization->delete();
+        return $organization->delete();
     }
 }

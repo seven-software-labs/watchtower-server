@@ -46,6 +46,12 @@ class TicketController extends Controller
             ->when($request->filled('department_id'), function($query) use($request) {
                 $query->where('department_id', $request->get('department_id'));
             })        
+            ->when($request->filled('organization_id'), function($query) use($request) {
+                $query->where('organization_id', $request->get('organization_id'));
+            })        
+            ->when($request->filled('user_id'), function($query) use($request) {
+                $query->where('user_id', $request->get('user_id'));
+            })        
             ->orderBy('last_replied_at', 'desc')
             ->paginate(50);
 

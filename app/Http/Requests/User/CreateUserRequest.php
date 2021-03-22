@@ -13,7 +13,19 @@ class CreateUserRequest extends FormRequest
      */
     public function authorize()
     {
-        return false;
+        return true;
+    }
+
+    /**
+     * Prepare the data for validation.
+     *
+     * @return void
+     */
+    protected function prepareForValidation()
+    {
+        $this->merge([
+            'master_organization_id' => auth()->user()->master_organization_id,
+        ]);
     }
 
     /**
@@ -24,7 +36,11 @@ class CreateUserRequest extends FormRequest
     public function rules()
     {
         return [
-            //
+            'name' => ['required', 'string'],
+            'email' => ['required'],
+            'password' => ['sometimes', 'confirmed'],
+            'organization_id' => ['nullable', 'exists:organizations,id'],
+            'master_organization_id' => ['required', 'exists:organizations,id'],
         ];
     }
 }

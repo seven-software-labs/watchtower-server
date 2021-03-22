@@ -3,9 +3,27 @@
 namespace App\Observers;
 
 use App\Models\User;
+use App\Events\User\UserCreated;
+use App\Events\User\UserUpdated;
+use App\Events\User\UserDeleted;
+use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Str;
 
 class UserObserver
 {
+    /**
+     * Handle the User "creating" event.
+     *
+     * @param  \App\Models\User  $user
+     * @return void
+     */
+    public function creating(User $user)
+    {
+        if(!$user->password) {
+            $user->password = Hash::make(Str::random());
+        }
+    }
+
     /**
      * Handle the User "created" event.
      *
@@ -14,7 +32,7 @@ class UserObserver
      */
     public function created(User $user)
     {
-        //
+        UserCreated::dispatch($user);
     }
 
     /**
@@ -25,7 +43,21 @@ class UserObserver
      */
     public function updated(User $user)
     {
-        //
+        UserUpdated::dispatch($user);
+    }
+
+    /**
+     * Handle the User "deleting" event.
+     *
+     * @param  \App\Models\User  $user
+     * @return void
+     */
+    public function deleting(User $user)
+    {
+        if(count($user->tickets) > 0) {
+            throw new \Exception("Cannot delete a user with tickets.");
+            return false;
+        }
     }
 
     /**
@@ -36,28 +68,6 @@ class UserObserver
      */
     public function deleted(User $user)
     {
-        //
-    }
-
-    /**
-     * Handle the User "restored" event.
-     *
-     * @param  \App\Models\User  $user
-     * @return void
-     */
-    public function restored(User $user)
-    {
-        //
-    }
-
-    /**
-     * Handle the User "force deleted" event.
-     *
-     * @param  \App\Models\User  $user
-     * @return void
-     */
-    public function forceDeleted(User $user)
-    {
-        //
+        UserDeleted::dispatch($user);
     }
 }

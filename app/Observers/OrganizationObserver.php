@@ -62,7 +62,10 @@ class OrganizationObserver
      */
     public function deleting(Organization $organization)
     {
-        //
+        if(count($organization->users) > 0) {
+            throw new \Exception("Cannot delete an organization with users.");
+            return false;
+        }
     }
 
     /**
