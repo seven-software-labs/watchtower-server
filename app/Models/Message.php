@@ -24,22 +24,24 @@ class Message extends Model
      * @var array
      */
     protected $fillable = [
+        'subject',
         'content',
         'message_type_id',
         'ticket_id',
-        'user_id',
         'source_id',
         'source_created_at',
-        'target_user_id',
+        'sender_user_id',
+        'recipient_user_id',
         'is_sent',
         'is_delivered',
     ];
-
+    
     /**
      * The relationships that are automatically loaded.
      */
     protected $with = [
-        'user',
+        'sender',
+        'recipient',
     ];
 
     /**

@@ -48,6 +48,9 @@ class Ticket extends Model
     public function getLastRepliedAtAttribute()
     {
         $latestMessage = $this->messages()->latest()->first();
+
+        if(!$latestMessage) return null;
+
         return Carbon::parse($latestMessage->source_created_at)->diffForHumans();
     }
 

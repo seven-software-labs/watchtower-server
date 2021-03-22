@@ -124,7 +124,7 @@ class ProcessMail implements ShouldQueue
             $message = $ticket->messages()->create([
                 'content' => $mail->textPlain,
                 'message_type_id' => 1,
-                'user_id' => $user->getKey(),
+                'sender_user_id' => $user->getKey(),
                 'source_id' => $message_id,
                 'source_created_at' => Carbon::parse($mail->headers->date)->format('Y-m-d H:i:s'),
             ]);

@@ -36,7 +36,10 @@ class MessageController extends Controller
      */
     public function index(Request $request): AnonymousResourceCollection
     {
-        return MessageResource::collection($this->organization->messages()->paginate(15));
+        $messages = Message::where('ticket_id', $request->get('ticket_id'))
+            ->paginate(15);
+
+        return MessageResource::collection($messages);
     }
 
     /**
@@ -49,10 +52,11 @@ class MessageController extends Controller
 
         // Create the message for the ticket.
         $message = Message::create([
+            'subject' => $ticket->subject,
             'content' => $request->get('content'),
             'message_type_id' => $request->get('message_type_id'),
             'ticket_id' => $ticket->getKey(),
-            'user_id' => $request->get('user_id'),
+            'sender_user_id' => $request->get('user_id'),
             'source_created_at' => now(),
         ]);
 

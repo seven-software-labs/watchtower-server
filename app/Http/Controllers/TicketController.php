@@ -33,9 +33,9 @@ class TicketController extends Controller
     /**
      * Display a listing of the resource.
      */
-    public function index(Request $request, Organization $organization): AnonymousResourceCollection
+    public function index(Request $request): AnonymousResourceCollection
     {
-        $tickets = $organization->tickets()
+        $tickets = $this->organization->tickets()
             ->with(['channel', 'department', 'priority', 'status', 'user.organization'])
             ->when($request->filled('status_id'), function($query) use($request) {
                 $query->where('status_id', $request->get('status_id'));
@@ -61,7 +61,7 @@ class TicketController extends Controller
     /**
      * Store a newly created resource in storage.
      */
-    public function store(CreateTicketRequest $request, Organization $organization): TicketResource
+    public function store(CreateTicketRequest $request): TicketResource
     {
         $ticket = Ticket::create($request->validated());
 
@@ -71,10 +71,10 @@ class TicketController extends Controller
     /**
      * Display the specified resource.
      */
-    public function show(Request $request, Organization $organization, Ticket $ticket): TicketResource
+    public function show(Request $request, Ticket $ticket): TicketResource
     {
-        $ticket = $organization->tickets()
-            ->with('messages.user.roles')
+        $ticket = $this->organization->tickets()
+            ->with(['user'])
             ->find($ticket->getKey());
 
         return new TicketResource($ticket);
@@ -93,7 +93,7 @@ class TicketController extends Controller
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(DeleteTicketRequest $request, Organization $organization, Ticket $ticket): bool
+    public function destroy(DeleteTicketRequest $request, Ticket $ticket): bool
     {
         return $ticket->delete();
     }
