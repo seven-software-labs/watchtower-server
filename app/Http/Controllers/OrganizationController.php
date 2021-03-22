@@ -37,7 +37,7 @@ class OrganizationController extends Controller
     {
         $organizations = $this->organization->organizations()->paginate(15);
 
-        return OrganizationResource::collection($organizations);
+        return OrganizationResource::collection(\App\Models\Organization::paginate(15));
     }
 
     /**

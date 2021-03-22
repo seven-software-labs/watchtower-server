@@ -24,6 +24,7 @@ class Organization extends Model
      */
     protected $fillable = [
         'name',
+        'master_organization_id',
     ];
 
     /**
@@ -44,7 +45,15 @@ class Organization extends Model
      */
     public function organizations()
     {
-        return $this->hasMany(self::class, 'parent_organization_id');
+        return $this->hasMany(self::class, 'master_organization_id');
+    }    
+
+    /**
+     * Get the master organization that belong to the organization.
+     */
+    public function masterOrganization()
+    {
+        return $this->belongsTo(self::class, 'master_organization_id');
     }    
 
     /**
