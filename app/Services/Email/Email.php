@@ -94,6 +94,12 @@ class Email implements ServiceInterface {
                     'field_type' => 'password',
                 ],
             ])->toJSON(),
+            'required_fields' => collect([
+                [
+                    'label' => 'Email',
+                    'name' => 'email',
+                ],
+            ])->toJSON(),
         ]);
     }
 

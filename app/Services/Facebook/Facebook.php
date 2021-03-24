@@ -6,6 +6,8 @@ use App\Models\Channel;
 use App\Models\Message;
 use App\Models\Service;
 use App\Services\ServiceInterface;
+use Illuminate\Database\Schema\Blueprint;
+use Illuminate\Support\Facades\Schema;
 
 class Facebook implements ServiceInterface {
     /**
@@ -51,7 +53,17 @@ class Facebook implements ServiceInterface {
             'settings_schema' => collect([
                 // ...
             ])->toJSON(),
+            'required_fields' => collect([
+                'facebook_user_id',
+            ])->toJSON(),
         ]);
+
+        if(!Schema::hasColumn('users', 'facebook_user_id'))
+        {
+            Schema::table('users', function (Blueprint $table) {
+                $table->string('facebook_user_id')->nullable();
+            });
+        }
     }
 
     /**

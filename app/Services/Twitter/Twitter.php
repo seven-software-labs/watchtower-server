@@ -8,7 +8,6 @@ use App\Models\Service;
 use App\Services\Twitter\Jobs\ProcessSync;
 use App\Services\Twitter\Jobs\SendMessage;
 use App\Services\ServiceInterface;
-use Illuminate\Support\Facades\Http;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
@@ -69,6 +68,12 @@ class Twitter implements ServiceInterface {
                     'placeholder' => '[Authorize your account after channel creation.]',
                     'readonly' => true,
                     'field_type' => 'password',
+                ],
+            ])->toJSON(),
+            'required_fields' => collect([
+                [
+                    'label' => 'Twitter User ID',
+                    'name' => 'twitter_user_id',
                 ],
             ])->toJSON(),
         ]);

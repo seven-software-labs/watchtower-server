@@ -19,6 +19,7 @@ class CreateServicesTable extends Migration
             $table->string('class');
             $table->string('slug');
             $table->json('settings_schema');
+            $table->json('required_fields')->nullable();
             $table->boolean('is_active')->default(true);
             $table->softDeletes();
             $table->timestamps();

@@ -28,6 +28,7 @@ class Service extends Model
         'slug',
         'is_active',
         'settings_schema',
+        'required_fields',
     ];
 
     /**
@@ -56,6 +57,14 @@ class Service extends Model
      * Get the settings schema attribute.
      */
     public function getSettingsSchemaAttribute($value)
+    {
+        return collect(json_decode($value, true));
+    }
+
+    /**
+     * Get the settings schema attribute.
+     */
+    public function getRequiredFieldsAttribute($value)
     {
         return collect(json_decode($value, true));
     }
