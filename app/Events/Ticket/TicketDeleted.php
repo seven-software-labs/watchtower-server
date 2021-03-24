@@ -16,7 +16,7 @@ class TicketDeleted implements ShouldBroadcast
     /**
      * The ticket that was deleted.
      */
-    public $ticket;
+    public Ticket $ticket;
 
     /**
      * Create a new event instance.
@@ -35,6 +35,9 @@ class TicketDeleted implements ShouldBroadcast
      */
     public function broadcastOn()
     {
-        return new PrivateChannel('ticket-channel');
+        return [
+            new PrivateChannel("organization-{$this->ticket->organization_id}-ticket-{$this->ticket->getKey()}-channel"),
+            new PrivateChannel("organization-{$this->ticket->organization_id}-ticket-channel"),
+        ];
     }
 }

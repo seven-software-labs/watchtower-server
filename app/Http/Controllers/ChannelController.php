@@ -2,64 +2,90 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Channel;
+use App\Http\Controllers\Controller;
 use App\Http\Resources\ChannelResource;
+use App\Http\Requests\Channel\CreateChannelRequest;
+use App\Http\Requests\Channel\DeleteChannelRequest;
+use App\Http\Requests\Channel\UpdateChannelRequest;
+use App\Models\Channel;
+use App\Models\Message;
+use App\Models\Organization;
+use Illuminate\Http\Resources\Json\AnonymousResourceCollection;
 use Illuminate\Http\Request;
 
 class ChannelController extends Controller
 {
     /**
-     * Display a listing of the resource.
-     *
-     * @return \Illuminate\Http\Response
+     * The organization that holds the resources.
      */
-    public function index()
+    private Organization $organization;
+
+    /**
+     * Create a new ChannelController instance.
+     */
+    public function __construct()
     {
-        return ChannelResource::collection(Channel::paginate(15));
+        $this->middleware(function ($request, $next) {
+            $this->organization = auth()->user()->masterOrganization;
+            return $next($request);
+        });
+    }
+    
+    /**
+     * Display a listing of the resource.
+     */
+    public function index(Request $request): AnonymousResourceCollection
+    {
+        $channels = $this->organization->channels()
+            ->paginate(15);
+
+        return ChannelResource::collection($channels);
     }
 
     /**
      * Store a newly created resource in storage.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @return \Illuminate\Http\Response
      */
-    public function store(Request $request)
+    public function store(CreateChannelRequest $request)
     {
-        //
+        $channel = $this->organization->channels()
+            ->create($request->validated());
+
+        return new ChannelResource($channel);
     }
 
     /**
      * Display the specified resource.
-     *
-     * @param  \App\Models\Channel  $channel
-     * @return \Illuminate\Http\Response
      */
-    public function show(Channel $channel)
+    public function show(Request $request, Channel $channel): ChannelResource
     {
-        //
+        $organizationChannel = $this->organization->channels->where('id', $channel->getKey())->first();
+
+        return new ChannelResource($organizationChannel);
     }
 
     /**
      * Update the specified resource in storage.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @param  \App\Models\Channel  $channel
-     * @return \Illuminate\Http\Response
      */
-    public function update(Request $request, Channel $channel)
+    public function update(UpdateChannelRequest $request, Channel $channel)
     {
-        //
+        $channel->update($request->validated());
+
+        return new ChannelResource($channel->fresh());
     }
 
     /**
      * Remove the specified resource from storage.
-     *
-     * @param  \App\Models\Channel  $channel
-     * @return \Illuminate\Http\Response
      */
-    public function destroy(Channel $channel)
+    public function destroy(DeleteChannelRequest $request, Channel $channel): bool
     {
-        //
+        return $channel->delete();
+    }
+
+    /**
+     * Receive a message through this channel.
+     */
+    public function receiveMessage(Request $request, Channel $channel): Message
+    {
+        return $channel->service->receiveMessage($request);
     }
 }

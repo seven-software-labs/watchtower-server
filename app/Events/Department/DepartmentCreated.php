@@ -15,15 +15,11 @@ class DepartmentCreated implements ShouldBroadcast
 
     /**
      * The department that is firing with the event.
-     * 
-     * @var \App\Models\Department
      */
-    public $department;
+    public Department $department;
 
     /**
      * Create a new event instance.
-     *
-     * @return void
      */
     public function __construct(Department $department)
     {
@@ -32,10 +28,8 @@ class DepartmentCreated implements ShouldBroadcast
 
     /**
      * Get the channels the event should broadcast on.
-     *
-     * @return \Illuminate\Broadcasting\Channel|array
      */
-    public function broadcastOn()
+    public function broadcastOn(): array
     {
         return [
             new PrivateChannel("organization-{$this->department->organization_id}-department-{$this->department->getKey()}-channel"),

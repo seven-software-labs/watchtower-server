@@ -2,14 +2,13 @@
 
 namespace App\Models;
 
-use App\Channels\ChannelTrait;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
 class Channel extends Model
 {
-    use ChannelTrait, HasFactory, SoftDeletes;
+    use HasFactory, SoftDeletes;
 
     /**
      * The table associated with the model.
@@ -25,30 +24,74 @@ class Channel extends Model
      */
     protected $fillable = [
         'name',
-        'class',
-        'slug',
+        'department_id',
+        'organization_id',
+        'service_id',
         'is_active',
+        'settings',
     ];
 
     /**
      * The relationships that are automatically loaded.
      */
     protected $with = [
-        'channelSettings',
+        'service',
+        'department',
     ];
 
     /**
      * The relationship counts that are automatically appended.
      */
     protected $withCount = ['tickets'];
+
+    /**
+     * The accessors to append to the model's array form.
+     *
+     * @var array
+     */
+    protected $appends = [
+        'serviceActions',
+    ];        
+
+    /**
+     * Get the channel's settings attribute.
+     */
+    public function getSettingsAttribute($value)
+    {
+        return collect(json_decode($value));
+    }
+
+    /**
+     * Get the channel's actions from its service module.
+     */
+    public function getServiceActionsAttribute()
+    {
+        return $this->service->serviceModule->getActions($this);
+    }
     
     /**
-     * Get the channel settings that belong to this channel.
+     * Get the department that this channel belongs to.
      */
-    public function channelSettings()
+    public function department()
     {
-        return $this->hasMany(ChannelSetting::class);
+        return $this->belongsTo(Department::class);
+    }    
+
+    /**
+     * Get the organization that belongs to the priority.
+     */
+    public function organization()
+    {
+        return $this->belongsTo(Organization::class);
     }
+    
+    /**
+     * Get the service that this channel belongs to.
+     */
+    public function service()
+    {
+        return $this->belongsTo(Service::class);
+    }    
     
     /**
      * Get the tickets that belong to this channel.
@@ -59,10 +102,11 @@ class Channel extends Model
     }
 
     /**
-     * Get the organizations that belong to the channel.
+     * Get the users that belong to the channel.
      */
-    public function organizations()
+    public function users()
     {
-        return $this->hasManyThrough(Organization::class, ChannelOrganization::class, 'organization_id', 'id');
+        return $this->belongsToMany(User::class)
+            ->using(Pivot\ChannelUser::class);
     }
 }

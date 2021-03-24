@@ -27,6 +27,7 @@ class Status extends Model
         'color',
         'organization_id',
         'is_default',
+        'is_removeable',
     ];
 
     /**
@@ -43,7 +44,7 @@ class Status extends Model
     }
 
     /**
-     * Get the organizations that belong to the status.
+     * Get the organization that belongs to the status.
      */
     public function organization()
     {

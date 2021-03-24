@@ -17,7 +17,7 @@ class CreateOrganizationsTable extends Migration
         Schema::create('organizations', function (Blueprint $table) {
             $table->id();
             $table->string('name');
-            $table->foreignId('parent_organization_id')->nullable()->constrained('organizations');
+            $table->foreignId('master_organization_id')->nullable()->constrained('organizations');
             $table->softDeletes();
             $table->timestamps();
         });
@@ -40,17 +40,6 @@ class CreateOrganizationsTable extends Migration
      */
     public function seed()
     {
-        $organizations = collect([
-            [
-                'name' => 'Watchtower',
-            ],
-            [
-                'name' => 'Dallas Mavericks, Inc.'
-            ],
-        ]);
-
-        $organizations->each(function($organization) {
-            Organization::create($organization);
-        });
+        // ...
     }
 }

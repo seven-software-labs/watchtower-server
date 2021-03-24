@@ -7,18 +7,13 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
-use Laravel\Fortify\TwoFactorAuthenticatable;
-use Laravel\Jetstream\HasProfilePhoto;
-use Laravel\Sanctum\HasApiTokens;
 use Spatie\Permission\Traits\HasRoles;
-
+use Laravel\Passport\HasApiTokens;
 class User extends Authenticatable
 {
     use HasApiTokens;
     use HasFactory;
-    use HasProfilePhoto;
     use Notifiable;
-    use TwoFactorAuthenticatable;
     use SoftDeletes;
     use HasRoles;
 
@@ -38,6 +33,8 @@ class User extends Authenticatable
         'name',
         'email',
         'password',
+        'organization_id',
+        'master_organization_id',
     ];
 
     /**
@@ -62,18 +59,27 @@ class User extends Authenticatable
     ];
 
     /**
+     * The relationships that are automatically loaded.
+     * 
+     * @var array
+     */
+    protected $with = [
+        // 'organization',
+        // 'channels',
+    ];    
+
+    /**
      * The accessors to append to the model's array form.
      *
      * @var array
      */
     protected $appends = [
         'profile_photo_url',
-        'primary_organization',
         'is_customer',
     ];
 
     /**
-     * Get the organizations that belong to the user.
+     * Get the organization that belong to the user.
      */
     public function getIsCustomerAttribute()
     {
@@ -81,23 +87,36 @@ class User extends Authenticatable
     }
 
     /**
-     * Get the organizations that belong to the user.
+     * Get the profile photo attribute.
      */
-    public function organizations()
+    public function getProfilePhotoUrlAttribute()
     {
-        return $this->belongsToMany(Organization::class)
-            ->using(Pivot\OrganizationUser::class)
-            ->withPivot('is_default');
+        return "";
+    }
+    
+    /**
+     * Get the channels that belong to the user.
+     */
+    public function channels()
+    {
+        return $this->belongsToMany(Channel::class)
+            ->using(Pivot\ChannelUser::class);
     }
 
     /**
-     * Get the primary organization of the user.
+     * Get the organization that belong to the user.
      */
-    public function getPrimaryOrganizationAttribute()
+    public function organization()
     {
-        return $this->organizations()
-            ->where('is_default', true)
-            ->first();
+        return $this->belongsTo(Organization::class);
+    }
+
+    /**
+     * Get the master organization that belong to the user.
+     */
+    public function masterOrganization()
+    {
+        return $this->belongsTo(Organization::class, 'master_organization_id');
     }
 
     /**

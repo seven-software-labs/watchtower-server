@@ -2,68 +2,78 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Status;
+use App\Http\Controllers\Controller;
 use App\Http\Resources\StatusResource;
+use App\Http\Requests\Status\CreateStatusRequest;
+use App\Http\Requests\Status\DeleteStatusRequest;
+use App\Http\Requests\Status\UpdateStatusRequest;
+use App\Models\Status;
+use App\Models\Organization;
+use Illuminate\Http\Resources\Json\AnonymousResourceCollection;
 use Illuminate\Http\Request;
 
 class StatusController extends Controller
 {
     /**
-     * Display a listing of the resource.
-     *
-     * @return \Illuminate\Http\Response
+     * The organization that holds the resources.
      */
-    public function index()
+    private Organization $organization;
+
+    /**
+     * Create a new ChannelController instance.
+     */
+    public function __construct()
     {
-        $user = auth()->user();
-        $organization = $user->primaryOrganization;
-        $statuses = $organization->statuses()->paginate(15);
+        $this->middleware(function ($request, $next) {
+            $this->organization = auth()->user()->masterOrganization;
+            return $next($request);
+        });
+    }
+    
+    /**
+     * Display a listing of the resource.
+     */
+    public function index(Request $request): AnonymousResourceCollection
+    {
+        $statuses = $this->organization->statuses()
+            ->paginate(15);
 
         return StatusResource::collection($statuses);
     }
 
     /**
      * Store a newly created resource in storage.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @return \Illuminate\Http\Response
      */
-    public function store(Request $request)
+    public function store(CreateStatusRequest $request): StatusResource
     {
-        //
+        $status = Status::create($request->validated());
+
+        return new StatusResource($status);
     }
 
     /**
      * Display the specified resource.
-     *
-     * @param  \App\Models\Status  $status
-     * @return \Illuminate\Http\Response
      */
-    public function show(Status $status)
+    public function show(Request $request, Status $status): StatusResource
     {
-        //
+        return new StatusResource($status);
     }
 
     /**
      * Update the specified resource in storage.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @param  \App\Models\Status  $status
-     * @return \Illuminate\Http\Response
      */
-    public function update(Request $request, Status $status)
+    public function update(UpdateStatusRequest $request, Status $status)
     {
-        //
+        $status->update($request->validated());
+
+        return new StatusResource($status->fresh());
     }
 
     /**
      * Remove the specified resource from storage.
-     *
-     * @param  \App\Models\Status  $status
-     * @return \Illuminate\Http\Response
      */
-    public function destroy(Status $status)
+    public function destroy(DeleteStatusRequest $request, Status $status): bool
     {
-        //
+        return $status->delete();
     }
 }
