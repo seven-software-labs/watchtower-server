@@ -18,6 +18,7 @@ class DatabaseSeeder extends Seeder
     {
         $organization = Organization::create([
             'name' => 'Watchtower Support',
+            'subdomain' => 'eatchtowersupport',
         ]);
 
         $user = User::create([
