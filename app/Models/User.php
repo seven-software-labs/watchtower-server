@@ -64,8 +64,7 @@ class User extends Authenticatable
      * @var array
      */
     protected $with = [
-        // 'organization',
-        // 'channels',
+        // ...
     ];    
 
     /**
@@ -125,5 +124,23 @@ class User extends Authenticatable
     public function tickets()
     {
         return $this->hasMany(Ticket::class);
+    }
+
+    /**
+     * Override Laravel Passport's function to find the
+     * user that's trying to authenticate.
+     */
+    public function findForPassport($credentials)
+    {
+        // Parse the organization subdomain and the email.
+        $credentials = explode(":", $credentials);
+
+        // Find the organization with the given subdomain.
+        $organization = Organization::where('subdomain', $credentials[0])->first();
+
+        // Find the user with the email in the subdomain.
+        return self::where('email', $credentials[1])
+            ->where('master_organization_id', $organization->getKey())
+            ->first();
     }
 }
