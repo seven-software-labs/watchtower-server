@@ -24,6 +24,7 @@ class Organization extends Model
      */
     protected $fillable = [
         'name',
+        'subdomain',
         'master_organization_id',
     ];
 
@@ -41,7 +42,7 @@ class Organization extends Model
     }    
 
     /**
-     * Get the channels that belong to the organization.
+     * Get the organizations that belong to the organization.
      */
     public function organizations()
     {

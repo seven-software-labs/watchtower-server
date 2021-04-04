@@ -17,19 +17,19 @@ class DatabaseSeeder extends Seeder
     public function run()
     {
         $organization = Organization::create([
-            'name' => 'Watchtower Helpdesk',
+            'name' => 'Watchtower Support',
         ]);
 
         $user = User::create([
-            'name' => 'Watchtower Helpdesk',
-            'email' => 'support@watchtowerhelpdesk.xyz',
+            'name' => 'Watchtower Support',
+            'email' => 'support@watchtowersupport.com',
             'password' => Hash::make('password'),
             'master_organization_id' => $organization->getKey(),
             'email_verified_at' => now(),
         ]);
 
-        $user->assignRole(['administrator', 'operator']);
-
-        $user->masterOrganization->setupOrganization();
+        $user->assignRole([
+            'operator',
+        ]);
     }
 }

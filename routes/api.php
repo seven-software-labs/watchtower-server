@@ -14,6 +14,9 @@ use Illuminate\Support\Facades\Route;
 |
 */
 
+// Auth
+Route::post('register', [\App\Http\Controllers\AuthController::class, 'register']);
+
 Route::group(['middleware' => ['auth:api']], function() {
     Broadcast::routes();
 
