@@ -37,9 +37,13 @@ class OrganizationCreated implements ShouldBroadcast
      */
     public function broadcastOn()
     {
+        if (!$this->organization->masterOrganization) {
+            return [];
+        }
+
         return [
-            new PrivateChannel("organization-{$this->masterOrganization->getKey()}-organization-{$this->organization->getKey()}-channel"),
-            new PrivateChannel("organization-{$this->masterOrganization->getKey()}-organization-channel"),
+            new PrivateChannel("organization-{$this->organization->masterOrganization->getKey()}-organization-{$this->organization->getKey()}-channel"),
+            new PrivateChannel("organization-{$this->organization->masterOrganization->getKey()}-organization-channel"),
         ];
     }
 }
